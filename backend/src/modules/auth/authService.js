@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { AppError } from "../../utils/AppError.js";
+import { AppError } from "../../utils/appError.js";
 import {
   signAccessToken,
   signRefreshToken,
