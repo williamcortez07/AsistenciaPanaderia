@@ -1,0 +1,12 @@
+{
+  "name": "asistencia-panaderia-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Frontend para el sistema de control de asistencia de una panadería.",
+  "scripts": {
+    "start": "live-server public --port=3000"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}
