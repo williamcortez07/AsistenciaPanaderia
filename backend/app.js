@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import { env } from "./src/config/environment.js";
 import asistenciaRoutes from "./src/modules/asistencia/asistenciaRoutes.js";
 import authRoutes from "./src/modules/auth/authRoutes.js";
@@ -14,6 +15,13 @@ import { setupSwagger, swaggerSpec } from "./src/config/swagger.js";
 
 const app = express();
 
+app.use(
+  cors({
+    origin: env.CORS_ORIGIN === "*" ? "*" : env.CORS_ORIGIN.split(",").map((o) => o.trim()),
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Accept"],
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

@@ -3,163 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Control de Asistencia - Panadería</title>
+    <title>Iniciar Sesión — Asistencia Panadería</title>
+    <meta name="description" content="Sistema de control de asistencia y planilla para la panadería. Inicia sesión para continuar." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap"
       rel="stylesheet"
-      integrity="sha384-q3xk8TFQ4G8PTb1XklGWxiryMdkJ6ZcEJaht46kFxDm4nEQtQhgVZtdYZR8H5Q7i"
-      crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="../src/css/styles.css" />
+    <link rel="stylesheet" href="../src/css/login.css" />
+    <link rel="stylesheet" href="../src/css/toast.css" />
+    <link rel="stylesheet" href="../src/css/loader.css" />
   </head>
+
   <body>
-    <header class="bg-dark text-white py-3">
-      <div
-        class="container d-flex flex-column flex-md-row align-items-center justify-content-between"
-      >
-        <div>
-          <h1 class="h4 mb-1">Asistencia Panadería</h1>
-          <p class="mb-0 text-muted">
-            Sistema simple de control de asistencia y estadísticas
-          </p>
-        </div>
-        <nav>
-          <a class="text-white text-decoration-none me-3" href="#dashboard"
-            >Dashboard</a
-          >
-          <a class="text-white text-decoration-none me-3" href="#empleados"
-            >Empleados</a
-          >
-          <a class="text-white text-decoration-none" href="#reportes"
-            >Reportes</a
-          >
-        </nav>
-      </div>
-    </header>
+    <div id="login-root"></div>
 
-    <main class="container my-5">
-      <section id="dashboard" class="mb-5">
-        <div class="row align-items-center">
-          <div class="col-lg-8">
-            <h2>Bienvenido</h2>
-            <p class="lead">
-              Panel inicial para gestionar turnos, entradas y salidas de
-              personal en la panadería.
-            </p>
-            <div class="row g-3">
-              <div class="col-sm-6">
-                <div class="card shadow-sm border-0">
-                  <div class="card-body">
-                    <h3 class="h5">Asistencia</h3>
-                    <p class="mb-0">
-                      Registrar entradas y salidas rápidamente.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-6">
-                <div class="card shadow-sm border-0">
-                  <div class="card-body">
-                    <h3 class="h5">Empleados</h3>
-                    <p class="mb-0">
-                      Ver lista de empleados y datos de asistencia.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-4">
-            <div class="card bg-light shadow-sm border-0">
-              <div class="card-body">
-                <h3 class="h6 text-uppercase text-muted">Resumen rápido</h3>
-                <ul class="list-group list-group-flush mt-3">
-                  <li class="list-group-item">
-                    Empleados activos: <strong>12</strong>
-                  </li>
-                  <li class="list-group-item">
-                    Registros hoy: <strong>48</strong>
-                  </li>
-                  <li class="list-group-item">
-                    Reportes pendientes: <strong>2</strong>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="empleados" class="mb-5">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h2>Empleados</h2>
-          <button class="btn btn-primary">Agregar empleado</button>
-        </div>
-        <div class="table-responsive shadow-sm rounded">
-          <table class="table table-striped mb-0">
-            <thead class="table-dark">
-              <tr>
-                <th>Nombre</th>
-                <th>Cargo</th>
-                <th>Última asistencia</th>
-                <th>Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>María López</td>
-                <td>Panadera</td>
-                <td>Hoy 08:02</td>
-                <td><span class="badge bg-success">Presente</span></td>
-              </tr>
-              <tr>
-                <td>Carlos Vega</td>
-                <td>Repartidor</td>
-                <td>Ayer 17:25</td>
-                <td><span class="badge bg-warning text-dark">Ausente</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section id="reportes">
-        <div class="row g-4">
-          <div class="col-md-6">
-            <div class="card shadow-sm border-0">
-              <div class="card-body">
-                <h3 class="h5">Reporte de asistencia</h3>
-                <p>Descarga y revisa el historial de asistencias.</p>
-                <button class="btn btn-outline-primary">Ver reporte</button>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="card shadow-sm border-0">
-              <div class="card-body">
-                <h3 class="h5">Configuración</h3>
-                <p>Ajusta horarios de trabajo y parámetros del sistema.</p>
-                <button class="btn btn-outline-secondary">
-                  Ir a configuración
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="bg-white border-top py-3">
-      <div class="container text-center text-muted">
-        © 2026 Panadería Asistencia. Todos los derechos reservados.
-      </div>
-    </footer>
-
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-VoPFxxqpDXW9hF+MvKp02IVei0ftY8i05jDibJ8fEU1yAF5AyqK8Xz9NO/8+3jf9"
-      crossorigin="anonymous"
-    ></script>
-    <script src="../src/js/app.js"></script>
+    <!-- Orden de carga: api → routes → toast → login -->
+    <script src="../src/js/api.js" defer></script>
+    <script src="../src/js/routes.js" defer></script>
+    <script src="../src/js/toast.js" defer></script>
+    <script src="../src/js/loader.js" defer></script>
+    <script src="../src/js/login.js" defer></script>
   </body>
 </html>
