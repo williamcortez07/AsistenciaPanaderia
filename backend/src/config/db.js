@@ -22,12 +22,12 @@ const poolConfig = {
   connectionTimeoutMillis: 5000,
 };
 
-// Configuración SSL para producción
-if (env.NODE_ENV === 'production') {
-  poolConfig.ssl = {
-    rejectUnauthorized: env.DB_SSL_REJECT_UNAUTHORIZED === '1'
-  };
-}
+// SSL: siempre activo para Neon.tech (tanto local como producción)
+// DB_SSL_REJECT_UNAUTHORIZED=0 → rejectUnauthorized: false (necesario para el pooler de Neon)
+// DB_SSL_REJECT_UNAUTHORIZED=1 → rejectUnauthorized: true (solo si tienes cert propio)
+poolConfig.ssl = {
+  rejectUnauthorized: env.DB_SSL_REJECT_UNAUTHORIZED === '1',
+};
 
 const pool = new Pool(poolConfig);
 
