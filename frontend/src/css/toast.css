@@ -1,3 +1,5 @@
+@import url("globals.css");
+
 .toast-container {
   position: fixed;
   top: 1.5rem;

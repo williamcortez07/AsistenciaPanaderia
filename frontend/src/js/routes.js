@@ -1,8 +1,8 @@
 const ROUTES = (() => {
   const PATHS = {
-    login: "/index.html",
-    adminHome: "/admin/homeAdmin.html",
-    empleadoHome: "/Empleado/homeEmpleado.html",
+    login: "../index.html",
+    adminHome: "../admin/homeAdmin.html",
+    empleadoHome: "../Empleado/homeEmpleado.html",
   };
 
   const PROTECTED_ROUTES = [

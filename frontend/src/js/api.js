@@ -1,13 +1,4 @@
-/* ============================================================
-   api.js - Cliente HTTP centralizado para API REST
-   Base URL: https://asistenciapanaderia.onrender.com/api/v1
-   ============================================================ */
-
 const API_BASE_URL = "https://asistenciapanaderia.onrender.com/api/v1";
-
-/* ============================================================
-   CONFIGURACIÓN & UTILIDADES
-   ============================================================ */
 
 const apiConfig = {
   baseURL: API_BASE_URL,
@@ -19,7 +10,6 @@ const apiConfig = {
   retries: 1,
 };
 
-// Almacenamiento de tokens en localStorage para persistencia entre páginas
 const tokenStore = {
   get access() {
     return localStorage.getItem("accessToken");
@@ -81,15 +71,10 @@ async function handleResponse(response) {
   return data;
 }
 
-/* ============================================================
-   CLIENTE HTTP PRINCIPAL
-   ============================================================ */
-
 async function httpRequest(method, endpoint, body = null, options = {}) {
   const url = `${apiConfig.baseURL}${endpoint}`;
   const headers = { ...apiConfig.defaultHeaders, ...options.headers };
 
-  // Inyectar token de acceso si existe
   const accessToken = tokenStore.access;
   if (accessToken) {
     headers["Authorization"] = `Bearer ${accessToken}`;
@@ -118,8 +103,6 @@ async function httpRequest(method, endpoint, body = null, options = {}) {
       return await handleResponse(response);
     } catch (error) {
       lastError = error;
-
-      // Si es 401, intentar refresh token
       if (error.status === 401 && !options.skipRefresh) {
         try {
           await Auth.refresh();

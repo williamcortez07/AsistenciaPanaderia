@@ -1,16 +1,6 @@
-/* ================================
-   RESET & BASE
-   ================================ */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@import url("globals.css");
 
 body {
-  font-family: "Open Sans", sans-serif;
-  background-color: #f5e6d3; /* Beige suave */
-  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -293,8 +283,12 @@ body {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ================================

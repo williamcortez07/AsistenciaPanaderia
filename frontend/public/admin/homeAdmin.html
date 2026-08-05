@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Panel de Administrador</title>
-    <meta name="description" content="Panel de control para administradores del sistema de asistencia panadería." />
+    <meta
+      name="description"
+      content="Panel de control para administradores del sistema de asistencia panadería."
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -13,9 +16,138 @@
     />
     <link rel="stylesheet" href="../../src/css/globals.css" />
     <link rel="stylesheet" href="../../src/css/homeAdmin.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
   </head>
   <body>
     <div id="app-root"></div>
+    <header>
+      <div class="brand">
+        <i data-lucide="croissant"></i>
+        <h1>Panadería Central</h1>
+      </div>
+      <div class="user-profile">
+        <span>Hola, <strong>William C.</strong></span>
+        <span class="badge-role">ADMIN</span>
+      </div>
+    </header>
+
+    <main>
+      <!-- Acción Rápida Superior -->
+      <section class="quick-action-card">
+        <div class="quick-info">
+          <h2>Control de Asistencia Directo</h2>
+          <p>Registra manualmente tu hora de entrada o salida del día.</p>
+        </div>
+        <button
+          class="btn-primary"
+          onclick="alert('Abriendo lector de huella/asistencia manual...')"
+        >
+          <i data-lucide="clock"></i>
+          Registrar Asistencia
+        </button>
+      </section>
+
+      <!-- Módulos Principales (3 Botones solicitados) -->
+      <section class="modules-grid">
+        <!-- Módulo 1: Generar Planilla -->
+        <article class="card-module">
+          <div>
+            <div class="module-header">
+              <div class="icon-wrapper">
+                <i data-lucide="file-text"></i>
+              </div>
+              <h3>Generar Planilla</h3>
+            </div>
+            <p>
+              Consulta el total de horas trabajadas, horas extra, tardanzas y
+              calcula el pago de la nómina del personal.
+            </p>
+          </div>
+          <button
+            class="btn-secondary"
+            onclick="window.location.href = '/planilla'"
+          >
+            <i data-lucide="arrow-right"></i>
+            Ir a Planillas
+          </button>
+        </article>
+
+        <!-- Módulo 2: Administrar Personal -->
+        <article class="card-module">
+          <div>
+            <div class="module-header">
+              <div class="icon-wrapper">
+                <i data-lucide="users"></i>
+              </div>
+              <h3>Administrar Personal</h3>
+            </div>
+            <p>
+              Alta de nuevos panaderos y cajeros, actualización de datos,
+              reseteo de contraseñas y asignación de roles.
+            </p>
+          </div>
+          <button
+            class="btn-secondary"
+            onclick="window.location.href = '/personal'"
+          >
+            <i data-lucide="user-plus"></i>
+            Gestionar Personal
+          </button>
+        </article>
+
+        <!-- Módulo 3: Generar QR Asistencia (Mixto: Entrada/Salida) -->
+        <article class="card-module">
+          <div>
+            <div class="module-header">
+              <div class="icon-wrapper">
+                <i data-lucide="qr-code"></i>
+              </div>
+              <h3>Punto QR Mixto</h3>
+            </div>
+            <p>
+              Muestra un código QR dinámico en pantalla para que los empleados
+              lo escaneen tanto a la <strong>entrada</strong> como a la
+              <strong>salida</strong>.
+            </p>
+          </div>
+          <button class="btn-accent" onclick="abrirModalQR()">
+            <i data-lucide="scan"></i>
+            Generar QR Dinámico
+          </button>
+        </article>
+      </section>
+    </main>
+
+    <div class="modal-backdrop" id="modalQR">
+      <div class="modal-content">
+        <h3
+          style="
+            font-family: &quot;Montserrat&quot;;
+            color: var(--marron-calido);
+          "
+        >
+          Escanea para Marcar
+        </h3>
+        <p style="font-size: 0.85rem; margin-top: 0.25rem">
+          Sirve para Entrada y Salida automáticamente
+        </p>
+
+        <div class="qr-box">
+          <!-- Placeholder del QR -->
+          <img
+            src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=ASISTENCIA_TOKEN_DINAMICO_12345"
+            alt="Código QR"
+          />
+          <div class="timer">
+            El código cambia en: <span id="segundos">30</span>s
+          </div>
+        </div>
+
+        <button class="btn-secondary" onclick="cerrarModalQR()">
+          Cerrar Puesto de Marcado
+        </button>
+      </div>
+    </div>
 
     <!-- api.js debe cargarse ANTES que routes.js -->
     <script src="../../src/js/api.js" defer></script>

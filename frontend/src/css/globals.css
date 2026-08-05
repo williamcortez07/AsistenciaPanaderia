@@ -1,0 +1,44 @@
+:root {
+  --marron-calido: #8b5e3c;
+  --beige-suave: #f5e6d3;
+  --amarillo-mantequilla: #ffd77a;
+  --verde-oliva: #a3b18a;
+  --gris-neutro: #4a4a4a;
+  --blanco: #ffffff;
+  --sombra: 0 4px 12px rgba(139, 94, 60, 0.08);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Open Sans", sans-serif;
+  background-color: var(--beige-suave);
+  color: var(--gris-neutro);
+  min-height: 100vh;
+}
+
+img,
+svg,
+picture,
+video,
+canvas {
+  max-width: 100%;
+  display: block;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}

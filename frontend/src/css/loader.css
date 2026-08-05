@@ -1,3 +1,5 @@
+@import url("globals.css");
+
 .loader-overlay {
   position: fixed;
   inset: 0;

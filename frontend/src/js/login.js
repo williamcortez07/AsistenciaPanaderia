@@ -1,9 +1,3 @@
-/* ============================================================
-   login.js - Módulo de autenticación con API real
-   Consume: POST /api/v1/auth/login
-   Redirige: Admin → /admin/homeAdmin.html | Empleado → /Empleado/homeEmpleado.html
-   ============================================================ */
-
 const renderLogin = () => {
   const loginRoot = document.getElementById("login-root");
   if (!loginRoot) return;
@@ -129,7 +123,10 @@ const _initLoginHandlers = () => {
       showFieldError("password", "La contraseña es obligatoria.");
       hasError = true;
     } else if (password.length < 6) {
-      showFieldError("password", "La contraseña debe tener al menos 6 caracteres.");
+      showFieldError(
+        "password",
+        "La contraseña debe tener al menos 6 caracteres.",
+      );
       hasError = true;
     }
 
@@ -187,11 +184,13 @@ const _redirectByRole = (role) => {
   const origin = window.location.origin;
 
   if (role === "Admin") {
-    window.location.replace(`${origin}/admin/homeAdmin.html`);
+    window.location.replace(`${origin}/frontend/public/admin/homeAdmin.html`);
     return;
   }
   if (role === "Empleado") {
-    window.location.replace(`${origin}/Empleado/homeEmpleado.html`);
+    window.location.replace(
+      `${origin}/frontend/public/Empleado/homeEmpleado.html`,
+    );
     return;
   }
 
@@ -206,7 +205,7 @@ const _redirectByRole = (role) => {
   if (globalError) {
     showGlobalError(
       globalError,
-      `Rol no reconocido: "${role}". Contacta al administrador.`
+      `Rol no reconocido: "${role}". Contacta al administrador.`,
     );
   }
 };
@@ -214,7 +213,9 @@ const _redirectByRole = (role) => {
 const _resolveErrorMessage = (err) => {
   if (err?.status === 401) return "Correo o contraseña incorrectos.";
   if (err?.status === 403)
-    return err.message || "Tu cuenta no está activa. Contacta al administrador.";
+    return (
+      err.message || "Tu cuenta no está activa. Contacta al administrador."
+    );
   if (err?.message === "REQUEST_TIMEOUT")
     return "El servidor tardó demasiado. Intenta de nuevo.";
   if (!navigator.onLine) return "Sin conexión a internet.";
