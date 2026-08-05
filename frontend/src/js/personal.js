@@ -58,7 +58,7 @@ function renderizarTarjetas(empleados) {
     const card = document.createElement("article");
     card.className = "employee-card";
     card.onclick = () => {
-      window.location.href = `/personal/detalle?id=${emp.id}`;
+      window.location.href = `personalInfo.html?id=${emp.id}`;
     };
 
     card.innerHTML = `
@@ -67,7 +67,7 @@ function renderizarTarjetas(empleados) {
           <div class="avatar">${iniciales}</div>
           <div class="employee-details">
             <h3>${emp.nombres} ${emp.apellidos}</h3>
-            <span class="role">${emp.cargo || emp.rol || "Panadero"}</span>
+            <span class="role">${emp.cargo_nombre || "—"}</span>
           </div>
         </div>
       </div>

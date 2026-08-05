@@ -1,10 +1,249 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Personal Info</title>
+    <title>Perfil de Empleado - Panadería Central</title>
+    <meta
+      name="description"
+      content="Ver y editar la información de un empleado de Panadería Central."
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Iconos Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <link rel="stylesheet" href="../../src/css/globals.css" />
+    <link rel="stylesheet" href="../../src/css/loader.css" />
+    <link rel="stylesheet" href="../../src/css/toast.css" />
+    <link rel="stylesheet" href="../../src/css/personalInfo.css" />
   </head>
-  <body></body>
-  <script src="../src/js/routes.js" defer></script>
+  <body>
+    <header>
+      <div class="header-content">
+        <div class="brand-title">
+          <i data-lucide="user"></i>
+          <h1>Información del Empleado</h1>
+        </div>
+        <a href="personal.html" class="btn-back">
+          <i data-lucide="arrow-left"></i>
+          Volver al Personal
+        </a>
+      </div>
+    </header>
+
+    <main id="mainContainer">
+      <!-- Estado de carga -->
+      <div class="state-message" id="loadingState">
+        <i data-lucide="loader" style="width:32px;height:32px;color:var(--marron-calido);"></i>
+        <p>Cargando información del empleado...</p>
+      </div>
+
+      <!-- Estado de error -->
+      <div class="state-message" id="errorState" style="display:none;">
+        <i data-lucide="alert-circle" style="width:36px;height:36px;color:#e76f51;margin-bottom:0.5rem;"></i>
+        <p id="errorMessage">No se pudo cargar la información del empleado.</p>
+      </div>
+
+      <!-- Tarjeta de Perfil (se muestra al cargar datos) -->
+      <div class="profile-card" id="profileCard" style="display:none;">
+
+        <!-- Header del Perfil -->
+        <div class="profile-header">
+          <div class="profile-avatar-info">
+            <div class="avatar-large" id="avatarDisplay">--</div>
+            <div class="profile-names">
+              <h2 id="headerNombreCompleto">—</h2>
+              <p id="headerCargoCodigo">—</p>
+              <span class="status-pill" id="statusPill">
+                <span class="status-dot"></span>
+                <span id="statusText">—</span>
+              </span>
+            </div>
+          </div>
+          <button class="btn-toggle-edit" id="btnToggleEdit" type="button">
+            <i data-lucide="edit-3"></i>
+            <span id="btnEditText">Editar Información</span>
+          </button>
+        </div>
+
+        <!-- Barra de meta-info (horario del cargo) -->
+        <div class="profile-meta-bar" id="metaBar" style="display:none;">
+          <span class="meta-item">
+            <i data-lucide="clock"></i>
+            Entrada: <strong id="metaEntrada">—</strong>
+          </span>
+          <span class="meta-item">
+            <i data-lucide="clock"></i>
+            Salida: <strong id="metaSalida">—</strong>
+          </span>
+        </div>
+
+        <!-- Formulario de Edición / Lectura -->
+        <div class="profile-body">
+          <form id="employeeForm" novalidate>
+
+            <p class="section-title">Identificación</p>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="codigo_empleado">
+                  <i data-lucide="hash"></i> Código de Empleado
+                </label>
+                <input
+                  type="text"
+                  id="codigo_empleado"
+                  name="codigo_empleado"
+                  maxlength="20"
+                  disabled
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="cedula">
+                  <i data-lucide="credit-card"></i> Cédula
+                </label>
+                <input
+                  type="text"
+                  id="cedula"
+                  name="cedula"
+                  maxlength="20"
+                  disabled
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="nombres">
+                  <i data-lucide="user"></i> Nombres
+                </label>
+                <input
+                  type="text"
+                  id="nombres"
+                  name="nombres"
+                  maxlength="100"
+                  disabled
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="apellidos">
+                  <i data-lucide="user"></i> Apellidos
+                </label>
+                <input
+                  type="text"
+                  id="apellidos"
+                  name="apellidos"
+                  maxlength="100"
+                  disabled
+                  required
+                />
+              </div>
+            </div>
+
+            <p class="section-title">Cargo y Condiciones</p>
+            <div class="form-grid">
+              <!-- Cargo: select dinámico poblado desde /api/v1/cargos -->
+              <div class="form-group">
+                <label for="id_cargo">
+                  <i data-lucide="briefcase"></i> Cargo
+                </label>
+                <select id="id_cargo" name="id_cargo" disabled required>
+                  <option value="" disabled selected>—</option>
+                </select>
+              </div>
+
+              <!-- Estado: enum del backend -->
+              <div class="form-group">
+                <label for="estado">
+                  <i data-lucide="activity"></i> Estado laboral
+                </label>
+                <select id="estado" name="estado" disabled required>
+                  <option value="activo">Activo</option>
+                  <option value="inactivo">Inactivo</option>
+                  <option value="suspendido">Suspendido</option>
+                  <option value="retirado">Retirado</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="fecha_contratacion">
+                  <i data-lucide="calendar"></i> Fecha de Contratación
+                </label>
+                <input
+                  type="date"
+                  id="fecha_contratacion"
+                  name="fecha_contratacion"
+                  disabled
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="salario_base">
+                  <i data-lucide="dollar-sign"></i> Salario Base
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  id="salario_base"
+                  name="salario_base"
+                  disabled
+                  required
+                />
+              </div>
+            </div>
+
+            <p class="section-title">Contacto</p>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="telefono">
+                  <i data-lucide="phone"></i> Teléfono
+                </label>
+                <input
+                  type="tel"
+                  id="telefono"
+                  name="telefono"
+                  maxlength="20"
+                  disabled
+                />
+              </div>
+              <div class="form-group full-width">
+                <label for="direccion">
+                  <i data-lucide="map-pin"></i> Dirección
+                </label>
+                <textarea
+                  id="direccion"
+                  name="direccion"
+                  rows="2"
+                  disabled
+                ></textarea>
+              </div>
+            </div>
+
+            <!-- Acciones (visibles solo en modo edición) -->
+            <div class="form-actions" id="formActions">
+              <button type="button" class="btn-cancel" id="btnCancelEdit">
+                Cancelar
+              </button>
+              <button type="submit" class="btn-save" id="btnSave">
+                <i data-lucide="save"></i> Guardar Cambios
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <!-- Scripts en orden correcto -->
+    <script src="../../src/js/api.js" defer></script>
+    <script src="../../src/js/loader.js" defer></script>
+    <script src="../../src/js/toast.js" defer></script>
+    <script src="../../src/js/routes.js" defer></script>
+    <script src="../../src/js/personalInfo.js" defer></script>
+  </body>
 </html>

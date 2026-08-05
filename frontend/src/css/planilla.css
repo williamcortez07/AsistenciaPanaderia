@@ -1,1 +1,361 @@
 @import url("globals.css");
+
+body {
+  background-color: var(--beige-suave);
+  font-family: "Roboto", sans-serif;
+  color: var(--gris-neutro);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+header {
+  background-color: var(--marron-calido);
+  color: var(--blanco);
+  padding: 1.25rem 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.brand-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand-title h1 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.btn-back {
+  background-color: transparent;
+  color: var(--blanco);
+  border: 2px solid var(--blanco);
+  padding: 0.5rem 1rem;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-back:hover {
+  background-color: var(--blanco);
+  color: var(--marron-calido);
+}
+
+/* Main Container */
+main {
+  max-width: 1400px;
+  margin: 1.5rem auto;
+  padding: 0 1.5rem;
+  width: 100%;
+  flex: 1;
+}
+
+/* Controls Bar */
+.controls-bar {
+  background: var(--blanco);
+  padding: 1.25rem 1.5rem;
+  border-radius: 14px;
+  box-shadow: var(--sombra);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.filter-item label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--marron-calido);
+  text-transform: uppercase;
+}
+
+.filter-item select,
+.filter-item input {
+  padding: 0.55rem 0.8rem;
+  border: 1.5px solid #d0bca8;
+  border-radius: 8px;
+  font-family: "Roboto", sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  background: var(--blanco);
+}
+
+.filter-item select:focus,
+.filter-item input:focus {
+  border-color: var(--marron-calido);
+}
+
+.actions-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-action {
+  padding: 0.65rem 1.2rem;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: var(--marron-calido);
+  color: var(--blanco);
+}
+
+.btn-primary:hover {
+  background-color: #724c30;
+}
+
+.btn-success {
+  background-color: #4a6328;
+  color: var(--blanco);
+}
+
+.btn-success:hover {
+  background-color: #3b5020;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  border: 2px solid var(--marron-calido);
+  color: var(--marron-calido);
+}
+
+.btn-secondary:hover {
+  background-color: var(--amarillo-mantequilla);
+}
+
+/* State Messages */
+.state-message {
+  background: var(--blanco);
+  border-radius: 16px;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  box-shadow: var(--sombra);
+  color: var(--gris-neutro);
+}
+
+/* Document / Sheet Container */
+.sheet-wrapper {
+  background: var(--blanco);
+  border-radius: 14px;
+  box-shadow: var(--sombra);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  overflow-x: auto;
+}
+
+/* Banner Title inside Sheet */
+.sheet-header-banner {
+  border: 2px solid #000;
+  padding: 0.6rem 1rem;
+  text-align: center;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+  color: #000;
+  margin-bottom: 1.5rem;
+  background: #fdfdfd;
+}
+
+/* Tables styling matching black border layout */
+.payroll-table,
+.patronal-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+  color: #000;
+}
+
+.payroll-table th,
+.payroll-table td,
+.patronal-table th,
+.patronal-table td {
+  border: 1.5px solid #000;
+  padding: 0.5rem 0.6rem;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.payroll-table th,
+.patronal-table th {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  background-color: #f2f2f2;
+}
+
+.payroll-table td.text-left,
+.patronal-table td.text-left {
+  text-align: left;
+}
+
+.payroll-table td.text-right,
+.patronal-table td.text-right {
+  text-align: right;
+}
+
+.payroll-table tfoot td,
+.patronal-table tfoot td {
+  font-weight: 700;
+  background-color: #e6e6e6;
+  font-family: "Montserrat", sans-serif;
+}
+
+/* Signature column */
+.signature-col {
+  width: 100px;
+  height: 38px;
+}
+
+/* Section title for Prestaciones Patronales */
+.section-subheading {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--marron-calido);
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Secondary Table Wrapper (right aligned or bottom) */
+.patronal-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.patronal-table {
+  max-width: 700px;
+}
+
+/* PRINT STYLES - A4 LANDSCAPE EXACT FIT */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 8mm;
+  }
+
+  html, body {
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 7.5pt !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  header,
+  .controls-bar,
+  .no-print,
+  .btn-back {
+    display: none !important;
+  }
+
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .sheet-wrapper {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  .sheet-header-banner {
+    border: 2px solid #000 !important;
+    padding: 4px 8px !important;
+    font-size: 9pt !important;
+    margin-bottom: 10px !important;
+  }
+
+  .payroll-table,
+  .patronal-table {
+    font-size: 7.5pt !important;
+    margin-bottom: 10px !important;
+    width: 100% !important;
+    page-break-inside: avoid;
+  }
+
+  .payroll-table th,
+  .payroll-table td,
+  .patronal-table th,
+  .patronal-table td {
+    border: 1px solid #000 !important;
+    padding: 3px 4px !important;
+  }
+
+  .payroll-table th,
+  .patronal-table th {
+    background-color: #f0f0f0 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .payroll-table tfoot td,
+  .patronal-table tfoot td {
+    background-color: #e0e0e0 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .patronal-container {
+    justify-content: flex-end !important;
+  }
+
+  .signature-col {
+    height: 25px !important;
+  }
+}

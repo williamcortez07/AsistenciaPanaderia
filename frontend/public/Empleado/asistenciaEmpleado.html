@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Marcado de Asistencia - Panadería Central</title>
+    <meta
+      name="description"
+      content="Escanea el código QR para registrar tu asistencia."
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <link rel="stylesheet" href="../../src/css/globals.css" />
+    <link rel="stylesheet" href="../../src/css/loader.css" />
+    <link rel="stylesheet" href="../../src/css/toast.css" />
+    <link rel="stylesheet" href="../../src/css/asistencia.css" />
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="header-content">
+        <div class="brand-title">
+          <i data-lucide="clock"></i>
+          <h1>Marcado de Asistencia</h1>
+        </div>
+        <a href="homeEmpleado.html" class="btn-back">
+          <i data-lucide="arrow-left"></i>
+          Volver
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <!-- Estado del empleado actual -->
+      <div class="emp-info-card" id="empInfoCard">
+        <div class="emp-avatar" id="empAvatar">--</div>
+        <div class="emp-details">
+          <h2 id="empNombre">Cargando...</h2>
+          <p id="empCargo">—</p>
+          <span class="status-pill" id="estadoHoy">
+            <i data-lucide="clock-3"></i>
+            Verificando estado de hoy...
+          </span>
+        </div>
+      </div>
+
+      <!-- Lector de Cámara QR -->
+      <div class="scanner-card">
+        <div class="scanner-header">
+          <h3><i data-lucide="scan"></i> Escáner de Código QR</h3>
+          <p>Apunta la cámara al código QR generado por el administrador</p>
+        </div>
+
+        <!-- Área del video y overlay -->
+        <div class="video-container" id="videoContainer">
+          <video id="qrVideo" autoplay muted playsinline></video>
+          <canvas id="qrCanvas" style="display: none"></canvas>
+          <!-- Viewfinder overlay -->
+          <div class="viewfinder">
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+            <div class="scan-line" id="scanLine"></div>
+          </div>
+          <div class="camera-status" id="cameraStatus">
+            <i data-lucide="camera-off"></i>
+            <p>Cámara no iniciada</p>
+          </div>
+        </div>
+
+        <!-- Controles -->
+        <div class="scanner-controls">
+          <button class="btn-scan" id="btnStartScan">
+            <i data-lucide="camera"></i>
+            Activar Cámara
+          </button>
+          <button class="btn-stop" id="btnStopScan" style="display: none">
+            <i data-lucide="camera-off"></i>
+            Detener Cámara
+          </button>
+        </div>
+
+        <!-- Resultado del escaneo -->
+        <div class="scan-result" id="scanResult" style="display: none">
+          <div class="result-icon" id="resultIcon">
+            <i data-lucide="check-circle"></i>
+          </div>
+          <div class="result-info">
+            <h4 id="resultTitle">Marcado exitoso</h4>
+            <p id="resultMessage">Tu entrada fue registrada a las 08:05:00</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input manual alternativo (fallback) -->
+      <div class="manual-fallback">
+        <p class="fallback-label">
+          <i data-lucide="keyboard"></i> ¿Sin cámara? Usa el código manual:
+        </p>
+        <div class="fallback-input-group">
+          <input
+            type="text"
+            id="manualQrCode"
+            placeholder="Pega el contenido del QR aquí"
+            maxlength="500"
+          />
+          <button class="btn-manual" id="btnManualSubmit">
+            <i data-lucide="send"></i> Marcar
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <script src="../../src/js/api.js" defer></script>
+    <script src="../../src/js/loader.js" defer></script>
+    <script src="../../src/js/toast.js" defer></script>
+    <script src="../../src/js/routes.js" defer></script>
+    <!-- jsQR: decode QR from canvas -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script src="../../src/js/asistenciaEmpleado.js" defer></script>
+  </body>
+</html>

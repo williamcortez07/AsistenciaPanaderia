@@ -1,0 +1,391 @@
+@import url("globals.css");
+
+body {
+  background-color: var(--beige-suave);
+  font-family: "Roboto", sans-serif;
+  color: var(--gris-neutro);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Header ─── */
+header {
+  background-color: var(--marron-calido);
+  color: var(--blanco);
+  padding: 1.25rem 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.header-content {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.brand-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand-title h1 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.btn-back {
+  background-color: transparent;
+  color: var(--blanco);
+  border: 2px solid var(--blanco);
+  padding: 0.5rem 1rem;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-back:hover {
+  background-color: var(--blanco);
+  color: var(--marron-calido);
+}
+
+/* ─── Main ─── */
+main {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  width: 100%;
+  flex: 1;
+}
+
+/* ─── Estado de carga / error ─── */
+.state-message {
+  background: var(--blanco);
+  border-radius: 16px;
+  padding: 4rem 2rem;
+  text-align: center;
+  box-shadow: var(--sombra);
+  color: var(--gris-neutro);
+}
+
+.state-message p {
+  margin-top: 0.75rem;
+  font-size: 1rem;
+}
+
+/* ─── Profile Card ─── */
+.profile-card {
+  background: var(--blanco);
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(139, 94, 60, 0.1);
+  overflow: hidden;
+}
+
+/* Header del perfil */
+.profile-header {
+  background: linear-gradient(135deg, var(--marron-calido) 0%, #6b4226 100%);
+  color: var(--blanco);
+  padding: 2rem 2rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.profile-avatar-info {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.avatar-large {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(255, 215, 122, 0.25);
+  border: 3px solid var(--amarillo-mantequilla);
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--amarillo-mantequilla);
+  flex-shrink: 0;
+}
+
+.profile-names h2 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.profile-names p {
+  font-size: 0.9rem;
+  opacity: 0.85;
+  margin-top: 0.3rem;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-top: 0.5rem;
+}
+
+.status-pill.activo {
+  background: rgba(163, 177, 138, 0.3);
+  color: #c8e6b0;
+}
+
+.status-pill.inactivo,
+.status-pill.suspendido,
+.status-pill.retirado {
+  background: rgba(231, 111, 81, 0.25);
+  color: #ffb3a0;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+/* Botón editar en header */
+.btn-toggle-edit {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--blanco);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  padding: 0.6rem 1.2rem;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-toggle-edit:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: var(--blanco);
+}
+
+.btn-toggle-edit.editing {
+  background: rgba(231, 111, 81, 0.25);
+  border-color: #ffb3a0;
+}
+
+/* ─── Info Tabs (Horario) ─── */
+.profile-meta-bar {
+  background: var(--beige-suave);
+  padding: 0.75rem 2rem;
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #ead9c8;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--marron-calido);
+  font-weight: 600;
+}
+
+.meta-item svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ─── Cuerpo del formulario ─── */
+.profile-body {
+  padding: 2rem;
+}
+
+.section-title {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--marron-calido);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--beige-suave);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-group.full-width {
+  grid-column: span 2;
+}
+
+.form-group label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--marron-calido);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.form-group label svg {
+  width: 13px;
+  height: 13px;
+  opacity: 0.8;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid #e5d5c5;
+  border-radius: 8px;
+  font-family: "Roboto", sans-serif;
+  font-size: 0.92rem;
+  color: var(--gris-neutro);
+  background: #fdf8f4;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+/* Modo lectura — sin borde activo */
+.form-group input:disabled,
+.form-group select:disabled,
+.form-group textarea:disabled {
+  background: transparent;
+  border-color: transparent;
+  color: var(--gris-neutro);
+  cursor: default;
+  padding-left: 0;
+}
+
+/* Modo edición — borde visible */
+.form-group input:not(:disabled):focus,
+.form-group select:not(:disabled):focus,
+.form-group textarea:not(:disabled):focus {
+  border-color: var(--marron-calido);
+  background: var(--blanco);
+  box-shadow: 0 0 0 3px rgba(139, 94, 60, 0.1);
+}
+
+.form-group input:not(:disabled),
+.form-group select:not(:disabled),
+.form-group textarea:not(:disabled) {
+  border-color: #d0bca8;
+  background: var(--blanco);
+}
+
+/* ─── Acciones del formulario ─── */
+.form-actions {
+  display: none;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--beige-suave);
+  margin-top: 0.5rem;
+}
+
+.form-actions.visible {
+  display: flex;
+}
+
+.btn-cancel {
+  background: transparent;
+  border: 1.5px solid #bbb;
+  color: var(--gris-neutro);
+  padding: 0.7rem 1.25rem;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+  border-color: var(--gris-neutro);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.btn-save {
+  background: var(--marron-calido);
+  color: var(--blanco);
+  border: none;
+  padding: 0.7rem 1.5rem;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.2s;
+}
+
+.btn-save:hover {
+  background: #724c30;
+}
+
+.btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 600px) {
+  .profile-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-group.full-width {
+    grid-column: span 1;
+  }
+
+  .profile-meta-bar {
+    gap: 1rem;
+  }
+}

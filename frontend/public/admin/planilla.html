@@ -1,10 +1,198 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Planilla</title>
+    <title>Gestión de Planilla - Panadería Central</title>
+    <meta
+      name="description"
+      content="Módulo de cálculo y generación de planilla y nómina según leyes laborales de Nicaragua."
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Iconos Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <link rel="stylesheet" href="../../src/css/globals.css" />
+    <link rel="stylesheet" href="../../src/css/loader.css" />
+    <link rel="stylesheet" href="../../src/css/toast.css" />
+    <link rel="stylesheet" href="../../src/css/planilla.css" />
   </head>
-  <body></body>
-  <script src="../../src/js/routes.js" defer></script>
+  <body>
+    <!-- Header principal -->
+    <header class="no-print">
+      <div class="header-content">
+        <div class="brand-title">
+          <i data-lucide="file-text"></i>
+          <h1>Gestión de Planilla y Nómina</h1>
+        </div>
+        <a href="homeAdmin.html" class="btn-back">
+          <i data-lucide="arrow-left"></i>
+          Volver al Inicio
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <!-- Barra de controles y filtros (oculta en impresión) -->
+      <div class="controls-bar no-print">
+        <div class="filter-group">
+          <div class="filter-item">
+            <label for="selectMes">Mes</label>
+            <select id="selectMes">
+              <option value="1">Enero</option>
+              <option value="2">Febrero</option>
+              <option value="3">Marzo</option>
+              <option value="4">Abril</option>
+              <option value="5">Mayo</option>
+              <option value="6">Junio</option>
+              <option value="7">Julio</option>
+              <option value="8" selected>Agosto</option>
+              <option value="9">Septiembre</option>
+              <option value="10">Octubre</option>
+              <option value="11">Noviembre</option>
+              <option value="12">Diciembre</option>
+            </select>
+          </div>
+
+          <div class="filter-item">
+            <label for="selectAnio">Año</label>
+            <select id="selectAnio">
+              <option value="2025">2025</option>
+              <option value="2026" selected>2026</option>
+              <option value="2027">2027</option>
+            </select>
+          </div>
+
+          <div class="filter-item">
+            <label for="selectQuincena">Periodo</label>
+            <select id="selectQuincena">
+              <option value="1">1ra Quincena (01 al 15)</option>
+              <option value="2" selected>2da Quincena (16 al 30/31)</option>
+              <option value="mes">Mes Completo (01 al 30/31)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="actions-group">
+          <button type="button" class="btn-action btn-primary" id="btnCalcular">
+            <i data-lucide="calculator"></i>
+            Calcular Planilla
+          </button>
+          <button type="button" class="btn-action btn-success" id="btnGuardar">
+            <i data-lucide="save"></i>
+            Guardar en Sistema
+          </button>
+          <button type="button" class="btn-action btn-secondary" id="btnImprimir">
+            <i data-lucide="printer"></i>
+            Imprimir / Guardar PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- Estado de Carga -->
+      <div class="state-message no-print" id="loadingState" style="display: none;">
+        <i data-lucide="loader" style="width:36px;height:36px;color:var(--marron-calido);"></i>
+        <p style="margin-top:0.5rem;font-weight:600;">Calculando planilla...</p>
+      </div>
+
+      <!-- Hoja / Contenedor Imprimible de Planilla -->
+      <div class="sheet-wrapper" id="planillaSheet">
+        <!-- Banner de Encabezado -->
+        <div class="sheet-header-banner">
+          Nómina correspondiente al periodo del
+          <span id="lblFechaInicio">01</span> al
+          <span id="lblFechaFin">15</span> de
+          <span id="lblNombreMes">Agosto</span> del
+          <span id="lblAnioNum">2026</span>
+        </div>
+
+        <!-- Tabla 1: Nómina Principal -->
+        <table class="payroll-table" id="tablaNomina">
+          <thead>
+            <tr>
+              <th rowspan="2" style="width:30px;">Nº</th>
+              <th rowspan="2">Nombres y Apellidos</th>
+              <th rowspan="2">Cargo</th>
+              <th rowspan="2">Salario Básico</th>
+              <th rowspan="2">Horas Extras</th>
+              <th colspan="2">Antigüedad</th>
+              <th rowspan="2">Total Devengado</th>
+              <th rowspan="2">INSS Laboral<br />7%</th>
+              <th rowspan="2">IR Mensual</th>
+              <th rowspan="2">Total Deducciones</th>
+              <th rowspan="2">Total a pagar</th>
+              <th rowspan="2">Firma</th>
+            </tr>
+            <tr>
+              <th style="width:45px;">Años</th>
+              <th style="width:55px;">% Aplic</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyNomina">
+            <!-- Filas dinámicas -->
+          </tbody>
+          <tfoot>
+            <tr id="tfootNomina">
+              <td colspan="3" class="text-left">TOTALES</td>
+              <td id="totSalarioBasico" class="text-right">C$ 0.00</td>
+              <td id="totHorasExtras" class="text-right">C$ 0.00</td>
+              <td colspan="2"></td>
+              <td id="totDevengado" class="text-right">C$ 0.00</td>
+              <td id="totInssLaboral" class="text-right">C$ 0.00</td>
+              <td id="totIrMensual" class="text-right">C$ 0.00</td>
+              <td id="totDeducciones" class="text-right">C$ 0.00</td>
+              <td id="totAPagar" class="text-right">C$ 0.00</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <!-- Tabla 2: Cargas Patronales / Prestaciones Sociales -->
+        <div class="section-subheading">
+          <i data-lucide="shield-check" class="no-print"></i>
+          Resumen de Cargas Patronales y Prestaciones Sociales
+        </div>
+
+        <div class="patronal-container">
+          <table class="patronal-table" id="tablaPrestaciones">
+            <thead>
+              <tr>
+                <th>Vacaciones (8.33%)</th>
+                <th>Aguinaldo (8.33%)</th>
+                <th>INSS Patronal (22.5%)</th>
+                <th>INATEC (2%)</th>
+                <th>Total prestaciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyPrestaciones">
+              <!-- Filas dinámicas -->
+            </tbody>
+            <tfoot>
+              <tr id="tfootPrestaciones">
+                <td id="totVacaciones" class="text-right">C$ 0.00</td>
+                <td id="totAguinaldo" class="text-right">C$ 0.00</td>
+                <td id="totInssPatronal" class="text-right">C$ 0.00</td>
+                <td id="totInatec" class="text-right">C$ 0.00</td>
+                <td id="totTotalPrestaciones" class="text-right">C$ 0.00</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <!-- Scripts en orden -->
+    <script src="../../src/js/api.js" defer></script>
+    <script src="../../src/js/loader.js" defer></script>
+    <script src="../../src/js/toast.js" defer></script>
+    <script src="../../src/js/routes.js" defer></script>
+    <script src="../../src/js/planilla.js" defer></script>
+  </body>
 </html>

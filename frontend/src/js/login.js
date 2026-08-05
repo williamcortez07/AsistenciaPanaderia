@@ -189,7 +189,7 @@ const _redirectByRole = (role) => {
   }
   if (role === "Empleado") {
     window.location.replace(
-      `${origin}/frontend/public/Empleado/homeEmpleado.html`,
+      `${origin}/frontend/public/Empleado/asistenciaEmpleado.html`,
     );
     return;
   }
