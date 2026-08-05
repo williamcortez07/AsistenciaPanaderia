@@ -428,3 +428,9 @@ if (typeof module !== "undefined" && module.exports) {
 if (typeof window !== "undefined") {
   window.API = API;
 }
+
+// Las operaciones de empleados y usuarios se realizan a través de window.API:
+//   window.API.Empleados.listar()
+//   window.API.Empleados.crear(data)
+//   window.API.Usuarios.crear(data)
+// No se necesitan funciones de fetch separadas.

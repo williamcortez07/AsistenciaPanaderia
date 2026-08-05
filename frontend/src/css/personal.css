@@ -1,1 +1,439 @@
-@import url("globals.css");
+body {
+  background-color: var(--beige-suave);
+  font-family: "Roboto", sans-serif;
+  color: var(--gris-neutro);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header y Barra Superior */
+header {
+  background-color: var(--marron-calido);
+  color: var(--blanco);
+  padding: 1.25rem 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.header-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.brand-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand-title h1 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.btn-back {
+  background-color: transparent;
+  color: var(--blanco);
+  border: 2px solid var(--blanco);
+  padding: 0.5rem 1rem;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-back:hover {
+  background-color: var(--blanco);
+  color: var(--marron-calido);
+}
+
+/* Contenedor Principal */
+main {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  width: 100%;
+}
+
+/* Sección de Búsqueda y Acciones */
+.controls-bar {
+  background: var(--blanco);
+  padding: 1.25rem;
+  border-radius: 14px;
+  box-shadow: var(--sombra);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background-color: var(--beige-suave);
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  flex: 1;
+  min-width: 260px;
+  transition: border-color 0.2s ease;
+}
+
+.search-box:focus-within {
+  border-color: var(--marron-calido);
+}
+
+.search-box input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-family: "Roboto", sans-serif;
+  font-size: 0.95rem;
+  color: var(--gris-neutro);
+  margin-left: 0.5rem;
+}
+
+.btn-add-employee {
+  background-color: var(--marron-calido);
+  color: var(--blanco);
+  border: none;
+  padding: 0.75rem 1.25rem;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+.btn-add-employee:hover {
+  background-color: #724c30;
+}
+
+/* Grid de Empleados */
+.employees-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.employee-card {
+  background: var(--blanco);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: var(--sombra);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.employee-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(139, 94, 60, 0.12);
+  border-color: var(--amarillo-mantequilla);
+}
+
+.card-header-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: var(--beige-suave);
+  color: var(--marron-calido);
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--amarillo-mantequilla);
+}
+
+.employee-details h3 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.1rem;
+  color: var(--marron-calido);
+  line-height: 1.2;
+}
+
+.employee-details .role {
+  font-size: 0.85rem;
+  color: var(--gris-neutro);
+  margin-top: 0.25rem;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--beige-suave);
+}
+
+.status-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.65rem;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.status-activo {
+  background-color: rgba(163, 177, 138, 0.25);
+  color: #4a6328;
+}
+
+.status-inactivo {
+  background-color: rgba(231, 111, 81, 0.15);
+  color: var(--rojo-suave);
+}
+
+.action-link {
+  color: var(--marron-calido);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.state-message {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem 1rem;
+  background: var(--blanco);
+  border-radius: 16px;
+  color: var(--gris-neutro);
+}
+
+/* ESTILOS DEL MODAL DE REGISTRO */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: var(--blanco);
+  border-radius: 16px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  background-color: var(--marron-calido);
+  color: var(--blanco);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.2rem;
+}
+
+.btn-close-modal {
+  background: transparent;
+  border: none;
+  color: var(--blanco);
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+/* Indicador de Pasos */
+.stepper {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.stepper::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--beige-suave);
+  z-index: 1;
+  transform: translateY(-50%);
+}
+
+.step-item {
+  position: relative;
+  z-index: 2;
+  background: var(--blanco);
+  padding: 0 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--gris-neutro);
+}
+
+.step-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--beige-suave);
+  color: var(--marron-calido);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-item.active .step-number {
+  background: var(--marron-calido);
+  color: var(--blanco);
+}
+
+.step-item.active {
+  color: var(--marron-calido);
+}
+
+/* Formularios */
+.form-step {
+  display: none;
+}
+
+.form-step.active {
+  display: block;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-group.full-width {
+  grid-column: span 2;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--marron-calido);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 0.65rem;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  font-family: "Roboto", sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--marron-calido);
+}
+
+.modal-footer {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.btn-next {
+  background-color: var(--marron-calido);
+  color: var(--blanco);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-next:hover {
+  background-color: #724c30;
+}
+
+.btn-cancel {
+  background-color: transparent;
+  border: 1.5px solid var(--gris-neutro);
+  color: var(--gris-neutro);
+  padding: 0.75rem 1.25rem;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .form-group.full-width {
+    grid-column: span 1;
+  }
+}

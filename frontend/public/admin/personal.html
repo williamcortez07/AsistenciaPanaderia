@@ -3,8 +3,228 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Personal</title>
+    <title>Gestión de Personal - Panadería Central</title>
+
+    <!-- Tipografías Recomendadas -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Iconos Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="../../src/css/globals.css" />
+    <link rel="stylesheet" href="../../src/css/loader.css" />
+    <link rel="stylesheet" href="../../src/css/toast.css" />
+    <link rel="stylesheet" href="../../src/css/personal.css" />
   </head>
-  <body></body>
-  <script src="../src/js/routes.js" defer></script>
+  <body>
+    <header>
+      <div class="header-content">
+        <div class="brand-title">
+          <i data-lucide="users"></i>
+          <h1>Gestión de Personal</h1>
+        </div>
+        <!-- Botón Volver al inicio (homeAdmin) -->
+        <a href="homeAdmin.html" class="btn-back">
+          <i data-lucide="arrow-left"></i>
+          Volver al Inicio
+        </a>
+      </div>
+    </header>
+    <main>
+      <!-- Barra de Búsqueda y Acción -->
+      <section class="controls-bar">
+        <div class="search-box">
+          <i data-lucide="search" style="color: var(--marron-calido)"></i>
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Buscar por nombre, apellido o cargo..."
+          />
+        </div>
+        <button class="btn-add-employee" id="btnOpenModal">
+          <i data-lucide="user-plus"></i>
+          Nuevo Empleado
+        </button>
+      </section>
+
+      <!-- Grid de Tarjetas de Empleados -->
+      <section class="employees-grid" id="employeesContainer">
+        <!-- Se puebla dinámicamente -->
+      </section>
+    </main>
+
+    <!-- MODAL DE REGISTRO EN 2 PASOS -->
+    <div class="modal-backdrop" id="modalAddEmployee">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modalTitle">Nuevo Empleado</h2>
+          <button class="btn-close-modal" id="btnCloseModal">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <!-- Stepper -->
+          <div class="stepper">
+            <div class="step-item active" id="stepIndicator1">
+              <span class="step-number">1</span> Credenciales
+            </div>
+            <div class="step-item" id="stepIndicator2">
+              <span class="step-number">2</span> Datos del Empleado
+            </div>
+          </div>
+
+          <!-- PASO 1: Crear Usuario -->
+          <form id="formStep1" class="form-step active">
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label for="usuarioCorreo">Correo Electrónico *</label>
+                <input
+                  type="email"
+                  id="usuarioCorreo"
+                  required
+                  placeholder="ejemplo@panaderia.com"
+                />
+              </div>
+              <div class="form-group full-width">
+                <label for="usuarioPassword">Contraseña *</label>
+                <input
+                  type="password"
+                  id="usuarioPassword"
+                  required
+                  placeholder="••••••••"
+                />
+              </div>
+              <div class="form-group full-width">
+                <label for="usuarioRol">Rol del sistema *</label>
+                <select id="usuarioRol" required>
+                  <option value="" disabled selected>Cargando roles...</option>
+                </select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn-cancel" id="btnCancel1">
+                Cancelar
+              </button>
+              <button type="submit" class="btn-next" id="btnSubmitStep1">
+                Siguiente <i data-lucide="arrow-right"></i>
+              </button>
+            </div>
+          </form>
+
+          <!-- PASO 2: Agregar Empleado (Utiliza el usuario_id de la petición del paso 1) -->
+          <form id="formStep2" class="form-step">
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label for="empleadoCargo">Cargo *</label>
+                <select id="empleadoCargo" required>
+                  <option value="" disabled selected>Cargando cargos...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="empleadoCodigo">Código del Empleado *</label>
+                <input
+                  type="text"
+                  id="empleadoCodigo"
+                  required
+                  placeholder="PAN-001"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="empleadoCedula">Cédula *</label>
+                <input
+                  type="text"
+                  id="empleadoCedula"
+                  required
+                  placeholder="001-000000-0000X"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="empleadoNombres">Nombres *</label>
+                <input
+                  type="text"
+                  id="empleadoNombres"
+                  required
+                  placeholder="Juan Carlos"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="empleadoApellidos">Apellidos *</label>
+                <input
+                  type="text"
+                  id="empleadoApellidos"
+                  required
+                  placeholder="Pérez López"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="empleadoTelefono">Teléfono</label>
+                <input
+                  type="tel"
+                  id="empleadoTelefono"
+                  placeholder="8888-8888"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="empleadoFechaContratacion"
+                  >Fecha de Contratación *</label
+                >
+                <input type="date" id="empleadoFechaContratacion" required />
+              </div>
+
+              <div class="form-group">
+                <label for="empleadoSalarioBase">Salario Base *</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  id="empleadoSalarioBase"
+                  required
+                  placeholder="0.00"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="empleadoEstado">Estado *</label>
+                <select id="empleadoEstado" required>
+                  <option value="activo">Activo</option>
+                  <option value="inactivo">Inactivo</option>
+                </select>
+              </div>
+
+              <div class="form-group full-width">
+                <label for="empleadoDireccion">Dirección</label>
+                <textarea
+                  id="empleadoDireccion"
+                  rows="2"
+                  placeholder="Dirección domiciliar completa"
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="submit" class="btn-next" id="btnSubmitStep2">
+                <i data-lucide="check"></i> Guardar Empleado
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+  <!-- Dependencias: api.js primero, luego UX helpers, luego lógica de página -->
+  <script src="../../src/js/api.js" defer></script>
+  <script src="../../src/js/loader.js" defer></script>
+  <script src="../../src/js/toast.js" defer></script>
+  <script src="../../src/js/routes.js" defer></script>
+  <script src="../../src/js/personal.js" defer></script>
 </html>
