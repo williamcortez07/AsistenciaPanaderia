@@ -190,10 +190,17 @@
           Muestra este código a tus empleados para que escaneen su entrada/salida.
         </p>
 
-        <!-- Canvas donde se renderiza el QR -->
+        <!-- Imagen QR generada por servicio externo sin librerías -->
         <div class="qr-fullscreen">
           <div class="qr-canvas-wrapper">
-            <canvas id="qrAdminCanvas"></canvas>
+            <img
+              id="qrAdminImg"
+              src=""
+              alt="Código QR de asistencia"
+              width="220"
+              height="220"
+              style="display:block;border-radius:8px;"
+            />
           </div>
           <div class="qr-countdown">
             <i data-lucide="timer"></i>
@@ -392,7 +399,6 @@
     <script src="../../src/js/toast.js" defer></script>
     <script src="../../src/js/routes.js" defer></script>
     <!-- QR Code Generator (para el modal del admin) -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
     <script src="../../src/js/homeAdmin.js" defer></script>
   </body>
 </html>

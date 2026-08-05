@@ -55,24 +55,18 @@ function generarPayloadQR() {
   });
 }
 
-async function renderizarQR() {
-  const canvas = document.getElementById("qrAdminCanvas");
-  if (!canvas) return;
+function renderizarQR() {
+  const img = document.getElementById("qrAdminImg");
+  if (!img) return;
 
   const payload = generarPayloadQR();
 
-  try {
-    await QRCode.toCanvas(canvas, payload, {
-      width: 220,
-      margin: 2,
-      color: {
-        dark: "#5c3317",
-        light: "#ffffff",
-      },
-    });
-  } catch (err) {
-    console.error("Error al generar QR:", err);
-  }
+  // Sin librerías: el QR se genera como imagen desde api.qrserver.com
+  // El payload JSON codificado va en la URL — rápido y confiable
+  img.src =
+    `https://api.qrserver.com/v1/create-qr-code/` +
+    `?size=220x220&format=png&color=5c3317&bgcolor=ffffff` +
+    `&data=${encodeURIComponent(payload)}`;
 }
 
 function abrirModalQR() {
@@ -114,7 +108,7 @@ function iniciarCicloQR() {
 
     if (segsRestantes <= 0) {
       segsRestantes = QR_TTL_SECONDS;
-      await renderizarQR();
+      renderizarQR();
     }
   }, 1000);
 }
