@@ -4,7 +4,7 @@
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/frontend/public/$1"
+      "destination": "frontend/public/$1"
     }
   ]
 }
