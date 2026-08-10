@@ -415,7 +415,7 @@ export const getEvaluaciones = async ({
         ev.fecha_evaluacion, ev.estado, ev.puntuacion_total, ev.observaciones, ev.fecha_cierre,
         e.codigo_empleado, e.cedula, e.nombres AS empleado_nombres, e.apellidos AS empleado_apellidos,
         p.nombre AS periodo_nombre,
-        u.nombre AS evaluador_nombre,
+        u.correo AS evaluador_nombre,
         COUNT(*) OVER() AS total_count
       FROM public.evaluaciones_desempeno ev
       JOIN public.empleados e ON e.id = ev.id_empleado
@@ -471,7 +471,7 @@ export const getEvaluacionById = async (id) => {
         ev.fecha_evaluacion, ev.estado, ev.puntuacion_total, ev.observaciones, ev.fecha_cierre,
         e.codigo_empleado, e.cedula, e.nombres AS empleado_nombres, e.apellidos AS empleado_apellidos,
         p.nombre AS periodo_nombre, p.estado AS periodo_estado,
-        u.nombre AS evaluador_nombre
+        u.correo AS evaluador_nombre
       FROM public.evaluaciones_desempeno ev
       JOIN public.empleados e ON e.id = ev.id_empleado
       JOIN public.periodos_evaluacion p ON p.id = ev.id_periodo
