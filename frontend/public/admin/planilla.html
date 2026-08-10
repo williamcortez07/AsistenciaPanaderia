@@ -32,10 +32,15 @@
           <i data-lucide="file-text"></i>
           <h1>Gestión de Planilla y Nómina</h1>
         </div>
-        <a href="homeAdmin.html" class="btn-back">
-          <i data-lucide="arrow-left"></i>
-          Volver al Inicio
-        </a>
+        <div style="display:flex; gap:0.75rem; align-items:center;">
+          <a href="homeAdmin.html" class="btn-back">
+            <i data-lucide="arrow-left"></i>
+            Volver al Inicio
+          </a>
+          <button class="btn-back" style="background:var(--marron-calido);color:#fff;border:none;cursor:pointer;" onclick="logoutSesion()">
+            <i data-lucide="log-out"></i> Cerrar Sesión
+          </button>
+        </div>
       </div>
     </header>
 

@@ -133,3 +133,26 @@ window.addEventListener("DOMContentLoaded", () => {
     ROUTES.init();
   }
 });
+
+/**
+ * Cierra la sesión del usuario: limpia tokens, llama al endpoint de logout
+ * y redirige al login. Disponible globalmente en todas las vistas.
+ */
+window.logoutSesion = async function () {
+  try {
+    if (window.API?.Auth?.logout) {
+      await window.API.Auth.logout();
+    } else {
+      // Fallback manual si API no está disponible
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("userInfo");
+    }
+  } catch (e) {
+    // Aunque falle el endpoint, igual limpiamos y redirigimos
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("userInfo");
+  }
+  window.location.replace("/");
+};

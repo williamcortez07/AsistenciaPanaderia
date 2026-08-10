@@ -31,10 +31,15 @@
           <i data-lucide="clock"></i>
           <h1>Marcado de Asistencia</h1>
         </div>
-        <a href="homeEmpleado.html" class="btn-back">
-          <i data-lucide="arrow-left"></i>
-          Volver
-        </a>
+        <div style="display:flex; gap:0.75rem; align-items:center;">
+          <a href="homeEmpleado.html" class="btn-back">
+            <i data-lucide="arrow-left"></i>
+            Volver
+          </a>
+          <button class="btn-back" style="background:var(--marron-calido);color:#fff;border:none;cursor:pointer;" onclick="logoutSesion()">
+            <i data-lucide="log-out"></i> Cerrar Sesión
+          </button>
+        </div>
       </div>
     </header>
 

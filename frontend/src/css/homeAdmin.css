@@ -46,6 +46,26 @@ header {
   font-size: 0.75rem;
 }
 
+.btn-logout {
+  background: rgba(255,255,255,0.15);
+  color: var(--blanco);
+  border: 1.5px solid rgba(255,255,255,0.4);
+  padding: 0.35rem 0.85rem;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: background 0.2s ease;
+}
+
+.btn-logout:hover {
+  background: rgba(255,255,255,0.28);
+}
+
 /* Contenedor Principal */
 main {
   max-width: 1200px;

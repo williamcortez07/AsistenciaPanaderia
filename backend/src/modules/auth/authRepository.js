@@ -11,9 +11,13 @@ import { logger } from "../../utils/logger.js";
 export const findUserByCorreoForAuth = async (correo) => {
   try {
     const sql = `
-      SELECT u.id, u.correo, u.password_hash, u.estado, u.id_rol, r.nombre AS nombre_rol
+      SELECT
+        u.id, u.correo, u.password_hash, u.estado, u.id_rol, r.nombre AS nombre_rol,
+        e.id AS id_empleado, e.nombres AS emp_nombres, e.apellidos AS emp_apellidos,
+        e.codigo_empleado
       FROM public.usuarios u
       JOIN public.roles r ON r.id = u.id_rol
+      LEFT JOIN public.empleados e ON e.id_usuario = u.id
       WHERE u.correo = $1;
     `;
     const result = await query(sql, [correo]);

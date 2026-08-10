@@ -54,6 +54,12 @@ export const loginService = async ({ correo, password }) => {
       id_rol: user.id_rol,
       nombre_rol: user.nombre_rol,
       estado: user.estado,
+      // Datos del empleado vinculado (null si no existe vinculación)
+      id_empleado: user.id_empleado || null,
+      nombre: user.emp_nombres
+        ? `${user.emp_nombres} ${user.emp_apellidos}`.trim()
+        : null,
+      codigo_empleado: user.codigo_empleado || null,
     },
   };
 };
