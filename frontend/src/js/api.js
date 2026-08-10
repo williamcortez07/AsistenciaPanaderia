@@ -382,6 +382,59 @@ const Asistencia = {
 };
 
 /* ============================================================
+   ENDPOINTS - EVALUACIÓN AL DESEMPEÑO
+   ============================================================ */
+
+const Evaluaciones = {
+  // Periodos de Evaluación (6 meses)
+  listarPeriodos: (params) => get("/evaluaciones/periodos", params),
+  crearPeriodo: (data) => post("/evaluaciones/periodos", data),
+  obtenerPeriodo: (id) => get(`/evaluaciones/periodos/${id}`),
+  actualizarPeriodo: (id, data) => put(`/evaluaciones/periodos/${id}`, data),
+  cambiarEstadoPeriodo: (id, estadoData) =>
+    patch(`/evaluaciones/periodos/${id}/estado`, estadoData),
+
+  // Catálogo de Criterios (Checklist Base)
+  listarCriterios: (params) => get("/evaluaciones/criterios", params),
+  crearCriterio: (data) => post("/evaluaciones/criterios", data),
+  obtenerCriterio: (id) => get(`/evaluaciones/criterios/${id}`),
+  actualizarCriterio: (id, data) => put(`/evaluaciones/criterios/${id}`, data),
+  eliminarCriterio: (id) => del(`/evaluaciones/criterios/${id}`),
+
+  // Criterios / Ponderación del Periodo
+  listarCriteriosPeriodo: (id_periodo) =>
+    get(`/evaluaciones/periodos/${id_periodo}/criterios`),
+  agregarCriterioPeriodo: (id_periodo, data) =>
+    post(`/evaluaciones/periodos/${id_periodo}/criterios`, data),
+  actualizarCriterioPeriodo: (id_periodo, id, data) =>
+    put(`/evaluaciones/periodos/${id_periodo}/criterios/${id}`, data),
+  eliminarCriterioPeriodo: (id_periodo, id) =>
+    del(`/evaluaciones/periodos/${id_periodo}/criterios/${id}`),
+
+  // Evaluaciones de Desempeño
+  listarEvaluaciones: (params) => get("/evaluaciones", params),
+  crearEvaluacion: (data) => post("/evaluaciones", data),
+  obtenerEvaluacion: (id) => get(`/evaluaciones/${id}`),
+  actualizarEvaluacion: (id, data) => put(`/evaluaciones/${id}`, data),
+  cambiarEstadoEvaluacion: (id, estadoData) =>
+    patch(`/evaluaciones/${id}/estado`, estadoData),
+  calcularEvaluacion: (id) => post(`/evaluaciones/${id}/calcular`, {}),
+
+  // Resultados Checklist Bulk
+  obtenerResultados: (id_evaluacion) =>
+    get(`/evaluaciones/${id_evaluacion}/resultados`),
+  guardarResultadosBulk: (id_evaluacion, data) =>
+    put(`/evaluaciones/${id_evaluacion}/resultados/bulk`, data),
+
+  // Objetivos de Empleado
+  listarObjetivos: (params) => get("/evaluaciones/objetivos", params),
+  crearObjetivo: (data) => post("/evaluaciones/objetivos", data),
+  obtenerObjetivo: (id) => get(`/evaluaciones/objetivos/${id}`),
+  actualizarObjetivo: (id, data) => put(`/evaluaciones/objetivos/${id}`, data),
+  eliminarObjetivo: (id) => del(`/evaluaciones/objetivos/${id}`),
+};
+
+/* ============================================================
    HEALTH & DOCS
    ============================================================ */
 
@@ -415,6 +468,7 @@ const API = {
   Cargos,
   Auth,
   Asistencia,
+  Evaluaciones,
   Health,
   Docs,
 };

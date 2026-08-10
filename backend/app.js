@@ -10,6 +10,7 @@ import planillaRoutes from "./src/modules/planilla/planillaRoutes.js";
 import roleRoutes from "./src/modules/roles/rolRoutes.js";
 import usuarioRoutes from "./src/modules/usuarios/usuarioRoutes.js";
 import vacacionesRoutes from "./src/modules/vacaciones/vacacionesRoutes.js";
+import evaluacionesRoutes from "./src/modules/evaluaciones/evaluacionesRoutes.js";
 import errorHandler from "./src/middlewares/errorHanddleware.js";
 import { setupSwagger, swaggerSpec } from "./src/config/swagger.js";
 
@@ -33,6 +34,7 @@ app.use("/api/v1/asistencia", asistenciaRoutes);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/cargos", cargoRoutes);
 app.use("/api/v1/deducciones", deduccionesRoutes);
+app.use("/api/v1/evaluaciones", evaluacionesRoutes);
 app.use("/api/v1/empleados", empleadoRoutes);
 app.use("/api/v1/planilla", planillaRoutes);
 app.use("/api/v1/roles", roleRoutes);

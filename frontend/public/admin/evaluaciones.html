@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Evaluación al Desempeño - Panadería Central</title>
+    <meta
+      name="description"
+      content="Módulo de evaluación al desempeño por checklist, ponderaciones, periodos de 6 meses y objetivos para Panadería Central."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../src/css/globals.css" />
+    <link rel="stylesheet" href="../../src/css/loader.css" />
+    <link rel="stylesheet" href="../../src/css/toast.css" />
+    <link rel="stylesheet" href="../../src/css/evaluaciones.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+  <body>
+    <!-- Encabezado Principal -->
+    <header>
+      <div class="brand" onclick="window.location.href='homeAdmin.html'">
+        <i data-lucide="croissant"></i>
+        <h1>Panadería Central</h1>
+      </div>
+      <div class="user-profile">
+        <span>Hola, <strong id="headerUserName">Administrador</strong></span>
+        <span class="badge-role">ADMIN</span>
+        <button
+          class="btn-secondary"
+          style="padding: 0.35rem 0.75rem; font-size: 0.8rem;"
+          onclick="window.location.href='homeAdmin.html'"
+        >
+          <i data-lucide="arrow-left"></i> Volver al Inicio
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <!-- Banner Card Superior -->
+      <section class="eval-banner-card">
+        <div class="eval-banner-info">
+          <h2>
+            <i data-lucide="award"></i> Evaluación al Desempeño del Personal
+          </h2>
+          <p>
+            Gestión de periodos semestrales (6 meses), checklist de rúbricas (Rendimiento, Iniciativa, Creatividad), ponderaciones y objetivos individuales.
+          </p>
+        </div>
+        <div class="banner-actions">
+          <button class="btn-primary" onclick="abrirModalCrearEvaluacion()">
+            <i data-lucide="plus-circle"></i> Nueva Evaluación
+          </button>
+          <button class="btn-secondary" onclick="abrirModalCrearPeriodo()">
+            <i data-lucide="calendar"></i> Nuevo Periodo (6 Meses)
+          </button>
+        </div>
+      </section>
+
+      <!-- Contenedor Principal con Tabs -->
+      <section class="tabs-container">
+        <!-- Navegación por Pestañas -->
+        <nav class="tabs-nav">
+          <button
+            class="tab-nav-btn active"
+            id="tabBtnEvaluaciones"
+            onclick="switchTab('evaluaciones')"
+          >
+            <i data-lucide="clipboard-check"></i> Evaluaciones de Empleados
+          </button>
+          <button
+            class="tab-nav-btn"
+            id="tabBtnPeriodos"
+            onclick="switchTab('periodos')"
+          >
+            <i data-lucide="calendar-range"></i> Periodos de Evaluación
+          </button>
+          <button
+            class="tab-nav-btn"
+            id="tabBtnCriterios"
+            onclick="switchTab('criterios')"
+          >
+            <i data-lucide="check-square"></i> Catálogo de Criterios (Checklist)
+          </button>
+          <button
+            class="tab-nav-btn"
+            id="tabBtnObjetivos"
+            onclick="switchTab('objetivos')"
+          >
+            <i data-lucide="target"></i> Objetivos por Empleado
+          </button>
+        </nav>
+
+        <!-- PANEL 1: EVALUACIONES -->
+        <div id="panelEvaluaciones" class="tab-content-panel">
+          <div class="filter-bar">
+            <div class="filter-group">
+              <label for="filtroEvalPeriodo">Periodo de Evaluación</label>
+              <select id="filtroEvalPeriodo" onchange="cargarEvaluaciones()">
+                <option value="">Todos los periodos</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="filtroEvalEstado">Estado</label>
+              <select id="filtroEvalEstado" onchange="cargarEvaluaciones()">
+                <option value="">Todos los estados</option>
+                <option value="borrador">Borrador</option>
+                <option value="en_proceso">En Proceso</option>
+                <option value="completada">Completada</option>
+                <option value="aprobada">Aprobada</option>
+                <option value="cancelada">Cancelada</option>
+              </select>
+            </div>
+            <div class="filter-group" style="margin-left: auto;">
+              <button class="btn-primary" onclick="abrirModalCrearEvaluacion()">
+                <i data-lucide="plus"></i> Iniciar Evaluación
+              </button>
+            </div>
+          </div>
+
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Empleado</th>
+                <th>Periodo</th>
+                <th>Evaluador</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Puntuación Total</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyEvaluaciones">
+              <tr>
+                <td colspan="7" style="text-align:center; padding: 2rem;">
+                  Cargando evaluaciones de desempeño...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- PANEL 2: PERIODOS DE EVALUACIÓN (6 MESES) -->
+        <div id="panelPeriodos" class="tab-content-panel" style="display:none;">
+          <div class="filter-bar">
+            <div class="filter-group">
+              <label for="filtroPeriodoEstado">Estado del Periodo</label>
+              <select id="filtroPeriodoEstado" onchange="cargarPeriodos()">
+                <option value="">Todos</option>
+                <option value="abierto">Abiertos</option>
+                <option value="cerrado">Cerrados</option>
+                <option value="cancelado">Cancelados</option>
+              </select>
+            </div>
+            <div class="filter-group" style="margin-left: auto;">
+              <button class="btn-primary" onclick="abrirModalCrearPeriodo()">
+                <i data-lucide="calendar-plus"></i> Crear Periodo (6 Meses)
+              </button>
+            </div>
+          </div>
+
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Nombre del Periodo</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Fin</th>
+                <th>Duración</th>
+                <th>Ponderación Total</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyPeriodos">
+              <tr>
+                <td colspan="7" style="text-align:center; padding: 2rem;">
+                  Cargando periodos de evaluación...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- PANEL 3: CATÁLOGO DE CRITERIOS (CHECKLIST BASE) -->
+        <div id="panelCriterios" class="tab-content-panel" style="display:none;">
+          <div class="filter-bar">
+            <div class="filter-group">
+              <label for="filtroCriterioActivo">Filtrar Estado</label>
+              <select id="filtroCriterioActivo" onchange="cargarCriterios()">
+                <option value="">Todos los criterios</option>
+                <option value="true" selected>Solo Activos</option>
+                <option value="false">Inactivos</option>
+              </select>
+            </div>
+            <div class="filter-group" style="margin-left: auto;">
+              <button class="btn-primary" onclick="abrirModalCrearCriterio()">
+                <i data-lucide="plus"></i> Nuevo Criterio Base
+              </button>
+            </div>
+          </div>
+
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Orden</th>
+                <th>Criterio / Rubro</th>
+                <th>Descripción</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyCriterios">
+              <tr>
+                <td colspan="5" style="text-align:center; padding: 2rem;">
+                  Cargando catálogo de criterios...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- PANEL 4: OBJETIVOS DE EMPLEADO -->
+        <div id="panelObjetivos" class="tab-content-panel" style="display:none;">
+          <div class="filter-bar">
+            <div class="filter-group">
+              <label for="filtroObjEmpleado">Empleado</label>
+              <select id="filtroObjEmpleado" onchange="cargarObjetivos()">
+                <option value="">Todos los empleados</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="filtroObjEstado">Estado Meta</label>
+              <select id="filtroObjEstado" onchange="cargarObjetivos()">
+                <option value="">Todos los estados</option>
+                <option value="pendiente">Pendiente</option>
+                <option value="en_progreso">En Progreso</option>
+                <option value="cumplido">Cumplido</option>
+                <option value="no_cumplido">No Cumplido</option>
+              </select>
+            </div>
+            <div class="filter-group" style="margin-left: auto;">
+              <button class="btn-primary" onclick="abrirModalCrearObjetivo()">
+                <i data-lucide="target"></i> Asignar Objetivo
+              </button>
+            </div>
+          </div>
+
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Empleado</th>
+                <th>Periodo</th>
+                <th>Título del Objetivo</th>
+                <th>Meta / Resultado</th>
+                <th>% Cumplimiento</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyObjetivos">
+              <tr>
+                <td colspan="7" style="text-align:center; padding: 2rem;">
+                  Cargando objetivos de empleados...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <!-- MODAL 1: CALIFICAR CHECKLIST Y RÚBRICA DE EVALUACIÓN -->
+    <div class="modal-backdrop" id="modalCalificarChecklist">
+      <div class="modal-content-large" style="max-width: 950px;">
+        <div class="modal-header-bar">
+          <h3>
+            <i data-lucide="sliders"></i> Calificación de Checklist y Rúbrica
+          </h3>
+          <button class="btn-close-modal" onclick="cerrarModalCalificar()">&times;</button>
+        </div>
+
+        <div style="background:var(--beige-suave); padding:1rem; border-radius:12px; margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+          <div>
+            <h4 id="califEmpleadoNombre" style="color:var(--marron-calido); font-family:'Montserrat';">
+              Empleado: --
+            </h4>
+            <span id="califPeriodoNombre" style="font-size:0.85rem; color:var(--gris-neutro);">
+              Periodo: --
+            </span>
+          </div>
+          <div style="text-align:right;">
+            <span style="font-size:0.8rem; font-weight:700; color:var(--marron-calido);">PUNTUACIÓN TOTAL CALCULADA</span>
+            <div id="califScoreTotal" class="score-pill excelente" style="font-size:1.3rem; display:block; margin-top:0.2rem;">
+              0.00 pts
+            </div>
+          </div>
+        </div>
+
+        <form id="formCalificarChecklist">
+          <div id="containerChecklistItems">
+            <!-- Renderizado dinámico de tarjetas de criterios -->
+          </div>
+
+          <div class="modal-form-group" style="margin-top:1rem;">
+            <label for="califObservaciones">Observaciones Generales de la Evaluación</label>
+            <textarea id="califObservaciones" rows="3" placeholder="Comentarios finales sobre el desempeño del colaborador..."></textarea>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1.5rem;">
+            <button type="button" class="btn-secondary" onclick="cerrarModalCalificar()">
+              Cancelar
+            </button>
+            <button type="submit" class="btn-primary">
+              <i data-lucide="save"></i> Guardar Calificaciones y Recalcular Total
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL 2: CREAR / EDITAR PERIODO (6 MESES) -->
+    <div class="modal-backdrop" id="modalPeriodo">
+      <div class="modal-content-large" style="max-width: 600px;">
+        <div class="modal-header-bar">
+          <h3 id="modalPeriodoTitle"><i data-lucide="calendar"></i> Nuevo Periodo de Evaluación</h3>
+          <button class="btn-close-modal" onclick="cerrarModalPeriodo()">&times;</button>
+        </div>
+
+        <form id="formPeriodo">
+          <input type="hidden" id="periodoId" />
+          <div class="modal-form-group" style="margin-bottom:1rem;">
+            <label for="periodoNombre">Nombre del Periodo *</label>
+            <input type="text" id="periodoNombre" required placeholder="Ej: Evaluación 1er Semestre 2026" />
+          </div>
+
+          <div class="modal-form-grid" style="padding:0; background:none;">
+            <div class="modal-form-group">
+              <label for="periodoFechaInicio">Fecha Inicio *</label>
+              <input type="date" id="periodoFechaInicio" required />
+            </div>
+            <div class="modal-form-group">
+              <label for="periodoFechaFin">Fecha Fin *</label>
+              <input type="date" id="periodoFechaFin" required />
+            </div>
+          </div>
+
+          <div class="modal-form-grid" style="padding:0; background:none;">
+            <div class="modal-form-group">
+              <label for="periodoDuracion">Duración (Meses)</label>
+              <input type="number" id="periodoDuracion" value="6" required min="1" />
+            </div>
+            <div class="modal-form-group">
+              <label for="periodoEstado">Estado</label>
+              <select id="periodoEstado">
+                <option value="abierto" selected>Abierto</option>
+                <option value="cerrado">Cerrado</option>
+                <option value="cancelado">Cancelado</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1.5rem;">
+            <button type="button" class="btn-secondary" onclick="cerrarModalPeriodo()">Cancelar</button>
+            <button type="submit" class="btn-primary"><i data-lucide="save"></i> Guardar Periodo</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL 3: CONFIGURAR CHECKLIST Y PONDERACIONES DEL PERIODO -->
+    <div class="modal-backdrop" id="modalConfigPeriodo">
+      <div class="modal-content-large" style="max-width: 800px;">
+        <div class="modal-header-bar">
+          <h3><i data-lucide="settings"></i> Configuración de Checklist del Periodo</h3>
+          <button class="btn-close-modal" onclick="cerrarModalConfigPeriodo()">&times;</button>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--beige-suave); padding:0.85rem 1.2rem; border-radius:10px; margin-bottom:1.25rem;">
+          <h4 id="configPeriodoNombreTitle" style="color:var(--marron-calido); font-family:'Montserrat';">Periodo: --</h4>
+          <div>
+            <span style="font-size:0.8rem; font-weight:700; color:var(--marron-calido);">SUMA DE PONDERACIÓN: </span>
+            <span id="configPeriodoTotalPct" class="badge-status abierto" style="font-size:0.9rem;">0%</span>
+          </div>
+        </div>
+
+        <!-- Formulario para agregar criterio al periodo -->
+        <form id="formAddCriterioPeriodo" class="modal-form-grid">
+          <div class="modal-form-group">
+            <label for="configCriterioId">Criterio Base *</label>
+            <select id="configCriterioId" required>
+              <option value="" disabled selected>Cargando criterios...</option>
+            </select>
+          </div>
+          <div class="modal-form-group">
+            <label for="configPonderacion">Ponderación (%) *</label>
+            <input type="number" id="configPonderacion" step="0.01" min="0" max="100" required placeholder="Ej: 20" />
+          </div>
+          <div class="modal-form-group">
+            <label for="configMaxScore">Puntuación Máxima</label>
+            <input type="number" id="configMaxScore" value="100" min="1" required />
+          </div>
+          <div class="modal-form-group" style="justify-content:flex-end;">
+            <button type="submit" class="btn-primary" style="padding:0.55rem 1rem;">
+              <i data-lucide="plus"></i> Asignar Criterio
+            </button>
+          </div>
+        </form>
+
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Criterio</th>
+              <th>Ponderación (%)</th>
+              <th>Puntuación Máx</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyConfigPeriodo">
+            <tr><td colspan="4" style="text-align:center;">Cargando configuración...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- MODAL 4: CREAR CRITERIO BASE -->
+    <div class="modal-backdrop" id="modalCriterio">
+      <div class="modal-content-large" style="max-width: 550px;">
+        <div class="modal-header-bar">
+          <h3 id="modalCriterioTitle"><i data-lucide="check-square"></i> Criterio de Evaluación</h3>
+          <button class="btn-close-modal" onclick="cerrarModalCriterio()">&times;</button>
+        </div>
+
+        <form id="formCriterio">
+          <input type="hidden" id="criterioId" />
+          <div class="modal-form-group" style="margin-bottom:1rem;">
+            <label for="criterioNombre">Nombre del Criterio *</label>
+            <input type="text" id="criterioNombre" required placeholder="Ej: Creatividad e Ideas Innovadoras" />
+          </div>
+          <div class="modal-form-group" style="margin-bottom:1rem;">
+            <label for="criterioDescripcion">Descripción</label>
+            <textarea id="criterioDescripcion" rows="2" placeholder="Capacidad de proponer mejoras y aportes al equipo..."></textarea>
+          </div>
+          <div class="modal-form-grid" style="padding:0; background:none;">
+            <div class="modal-form-group">
+              <label for="criterioOrden">Orden de Presentación</label>
+              <input type="number" id="criterioOrden" value="1" min="1" />
+            </div>
+            <div class="modal-form-group">
+              <label for="criterioActivo">Estado</label>
+              <select id="criterioActivo">
+                <option value="true" selected>Activo</option>
+                <option value="false">Inactivo</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1.5rem;">
+            <button type="button" class="btn-secondary" onclick="cerrarModalCriterio()">Cancelar</button>
+            <button type="submit" class="btn-primary"><i data-lucide="save"></i> Guardar Criterio</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL 5: INICIAR EVALUACIÓN DE EMPLEADO -->
+    <div class="modal-backdrop" id="modalCrearEvaluacion">
+      <div class="modal-content-large" style="max-width: 600px;">
+        <div class="modal-header-bar">
+          <h3><i data-lucide="user-check"></i> Nueva Evaluación a Empleado</h3>
+          <button class="btn-close-modal" onclick="cerrarModalCrearEvaluacion()">&times;</button>
+        </div>
+
+        <form id="formCrearEvaluacion">
+          <div class="modal-form-group" style="margin-bottom:1rem;">
+            <label for="evalEmpleadoId">Empleado a Evaluar *</label>
+            <select id="evalEmpleadoId" required>
+              <option value="" disabled selected>Cargando empleados...</option>
+            </select>
+          </div>
+
+          <div class="modal-form-group" style="margin-bottom:1rem;">
+            <label for="evalPeriodoId">Periodo de Evaluación *</label>
+            <select id="evalPeriodoId" required>
+              <option value="" disabled selected>Cargando periodos abiertos...</option>
+            </select>
+          </div>
+
+          <div class="modal-form-group" style="margin-bottom:1rem;">
+            <label for="evalEvaluadorId">Evaluador Responsable</label>
+            <select id="evalEvaluadorId">
+              <option value="">Seleccionar usuario evaluador (opcional)</option>
+            </select>
+          </div>
+
+          <div class="modal-form-group" style="margin-bottom:1rem;">
+            <label for="evalObservacionesIniciales">Observaciones Iniciales</label>
+            <textarea id="evalObservacionesIniciales" rows="2" placeholder="Notas preparatorias..."></textarea>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1.5rem;">
+            <button type="button" class="btn-secondary" onclick="cerrarModalCrearEvaluacion()">Cancelar</button>
+            <button type="submit" class="btn-primary"><i data-lucide="play"></i> Iniciar Evaluación</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL 6: CREAR / EDITAR OBJETIVO DE EMPLEADO -->
+    <div class="modal-backdrop" id="modalObjetivo">
+      <div class="modal-content-large" style="max-width: 600px;">
+        <div class="modal-header-bar">
+          <h3 id="modalObjetivoTitle"><i data-lucide="target"></i> Asignar Objetivo a Empleado</h3>
+          <button class="btn-close-modal" onclick="cerrarModalObjetivo()">&times;</button>
+        </div>
+
+        <form id="formObjetivo">
+          <input type="hidden" id="objId" />
+          <div class="modal-form-group" style="margin-bottom:1rem;">
+            <label for="objEmpleadoId">Empleado *</label>
+            <select id="objEmpleadoId" required>
+              <option value="" disabled selected>Cargando empleados...</option>
+            </select>
+          </div>
+          <div class="modal-form-group" style="margin-bottom:1rem;">
+            <label for="objPeriodoId">Periodo de Evaluación *</label>
+            <select id="objPeriodoId" required>
+              <option value="" disabled selected>Cargando periodos...</option>
+            </select>
+          </div>
+          <div class="modal-form-group" style="margin-bottom:1rem;">
+            <label for="objTitulo">Título del Objetivo *</label>
+            <input type="text" id="objTitulo" required placeholder="Ej: Reducción de desperdicio de materia prima un 10%" />
+          </div>
+          <div class="modal-form-group" style="margin-bottom:1rem;">
+            <label for="objDescripcion">Descripción / Criterio de Medición</label>
+            <textarea id="objDescripcion" rows="2" placeholder="Detalle sobre cómo se medirá la meta..."></textarea>
+          </div>
+
+          <div class="modal-form-grid" style="padding:0; background:none;">
+            <div class="modal-form-group">
+              <label for="objMeta">Meta Numérica (opcional)</label>
+              <input type="number" id="objMeta" step="0.01" placeholder="Ej: 100" />
+            </div>
+            <div class="modal-form-group">
+              <label for="objResultado">Resultado Logrado (opcional)</label>
+              <input type="number" id="objResultado" step="0.01" placeholder="Ej: 95" />
+            </div>
+          </div>
+
+          <div class="modal-form-group" style="margin-bottom:1rem;">
+            <label for="objEstado">Estado del Objetivo</label>
+            <select id="objEstado">
+              <option value="pendiente" selected>Pendiente</option>
+              <option value="en_progreso">En Progreso</option>
+              <option value="cumplido">Cumplido</option>
+              <option value="no_cumplido">No Cumplido</option>
+            </select>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1.5rem;">
+            <button type="button" class="btn-secondary" onclick="cerrarModalObjetivo()">Cancelar</button>
+            <button type="submit" class="btn-primary"><i data-lucide="save"></i> Guardar Objetivo</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Scripts en orden exacto -->
+    <script src="../../src/js/api.js" defer></script>
+    <script src="../../src/js/loader.js" defer></script>
+    <script src="../../src/js/toast.js" defer></script>
+    <script src="../../src/js/evaluaciones.js" defer></script>
+  </body>
+</html>
