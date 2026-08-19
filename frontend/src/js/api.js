@@ -386,6 +386,9 @@ const Asistencia = {
    ============================================================ */
 
 const Evaluaciones = {
+  // Dashboard & Métricas
+  obtenerDashboardStats: (params) => get("/evaluaciones/dashboard/stats", params),
+
   // Periodos de Evaluación (6 meses)
   listarPeriodos: (params) => get("/evaluaciones/periodos", params),
   crearPeriodo: (data) => post("/evaluaciones/periodos", data),
@@ -400,6 +403,13 @@ const Evaluaciones = {
   obtenerCriterio: (id) => get(`/evaluaciones/criterios/${id}`),
   actualizarCriterio: (id, data) => put(`/evaluaciones/criterios/${id}`, data),
   eliminarCriterio: (id) => del(`/evaluaciones/criterios/${id}`),
+
+  // Preguntas del Checklist
+  listarPreguntas: (params) => get("/evaluaciones/preguntas", params),
+  crearPregunta: (data) => post("/evaluaciones/preguntas", data),
+  obtenerPregunta: (id) => get(`/evaluaciones/preguntas/${id}`),
+  actualizarPregunta: (id, data) => put(`/evaluaciones/preguntas/${id}`, data),
+  eliminarPregunta: (id) => del(`/evaluaciones/preguntas/${id}`),
 
   // Criterios / Ponderación del Periodo
   listarCriteriosPeriodo: (id_periodo) =>
@@ -420,10 +430,16 @@ const Evaluaciones = {
     patch(`/evaluaciones/${id}/estado`, estadoData),
   calcularEvaluacion: (id) => post(`/evaluaciones/${id}/calcular`, {}),
 
-  // Resultados Checklist Bulk
+  // Respuestas Detalladas Checklist Bulk
+  obtenerRespuestas: (id_evaluacion) =>
+    get(`/evaluaciones/${id_evaluacion}/respuestas`),
+  guardarRespuestasBulk: (id_evaluacion, data) =>
+    put(`/evaluaciones/${id_evaluacion}/respuestas/bulk`, data),
+
+  // Resultados Checklist Bulk (Alias)
   obtenerResultados: (id_evaluacion) =>
     get(`/evaluaciones/${id_evaluacion}/resultados`),
-  guardarResultadosBulk: (id_evaluacion, data) =>
+  guardarResultadosBulkLegacy: (id_evaluacion, data) =>
     put(`/evaluaciones/${id_evaluacion}/resultados/bulk`, data),
 
   // Objetivos de Empleado
@@ -432,6 +448,13 @@ const Evaluaciones = {
   obtenerObjetivo: (id) => get(`/evaluaciones/objetivos/${id}`),
   actualizarObjetivo: (id, data) => put(`/evaluaciones/objetivos/${id}`, data),
   eliminarObjetivo: (id) => del(`/evaluaciones/objetivos/${id}`),
+
+  // Planes de Mejora Continua
+  listarPlanesMejora: (params) => get("/evaluaciones/planes-mejora", params),
+  crearPlanMejora: (data) => post("/evaluaciones/planes-mejora", data),
+  obtenerPlanMejora: (id) => get(`/evaluaciones/planes-mejora/${id}`),
+  actualizarPlanMejora: (id, data) => put(`/evaluaciones/planes-mejora/${id}`, data),
+  eliminarPlanMejora: (id) => del(`/evaluaciones/planes-mejora/${id}`),
 };
 
 /* ============================================================

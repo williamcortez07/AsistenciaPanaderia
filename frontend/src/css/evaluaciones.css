@@ -38,6 +38,15 @@ header {
   font-size: 0.9rem;
 }
 
+.user-profile .btn-secondary {
+  color: var(--blanco);
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
+.user-profile .btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
 .badge-role {
   background-color: var(--amarillo-mantequilla);
   color: var(--marron-calido);

@@ -22,6 +22,11 @@ export const createEmpleadoSchema = z.object({
       .uuid("El id_usuario debe ser un UUID válido")
       .optional()
       .nullable(),
+    id_supervisor: z
+      .string()
+      .uuid("El id_supervisor debe ser un UUID válido")
+      .optional()
+      .nullable(),
     codigo_empleado: z
       .string()
       .trim()
@@ -69,6 +74,11 @@ export const updateEmpleadoSchema = z.object({
       id_usuario: z
         .string()
         .uuid("El id_usuario debe ser un UUID válido")
+        .optional()
+        .nullable(),
+      id_supervisor: z
+        .string()
+        .uuid("El id_supervisor debe ser un UUID válido")
         .optional()
         .nullable(),
       codigo_empleado: z

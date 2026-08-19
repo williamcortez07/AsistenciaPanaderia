@@ -8,6 +8,7 @@ import { logger } from "../../utils/logger.js";
 export const createEmpleado = async ({
   id_cargo,
   id_usuario = null,
+  id_supervisor = null,
   codigo_empleado,
   cedula,
   nombres,
@@ -23,6 +24,7 @@ export const createEmpleado = async ({
       INSERT INTO public.empleados (
         id_cargo,
         id_usuario,
+        id_supervisor,
         codigo_empleado,
         cedula,
         nombres,
@@ -33,15 +35,16 @@ export const createEmpleado = async ({
         salario_base,
         estado
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
       RETURNING
-        id, id_cargo, id_usuario, codigo_empleado, cedula,
+        id, id_cargo, id_usuario, id_supervisor, codigo_empleado, cedula,
         nombres, apellidos, telefono, direccion,
         fecha_contratacion, salario_base, estado;
     `;
     const result = await query(sql, [
       id_cargo,
       id_usuario,
+      id_supervisor,
       codigo_empleado,
       cedula,
       nombres,
@@ -71,13 +74,15 @@ export const getEmpleados = async (
 
     let sql = `
       SELECT
-        e.id, e.id_cargo, e.id_usuario, e.codigo_empleado, e.cedula,
+        e.id, e.id_cargo, e.id_usuario, e.id_supervisor, e.codigo_empleado, e.cedula,
         e.nombres, e.apellidos, e.telefono, e.direccion,
         e.fecha_contratacion, e.salario_base, e.estado,
         c.nombre AS cargo_nombre, c.horario_entrada, c.horario_salida,
+        CONCAT(sup.nombres, ' ', sup.apellidos) AS supervisor_nombre,
         COUNT(*) OVER() AS total_count
       FROM public.empleados e
       LEFT JOIN public.cargos c ON e.id_cargo = c.id
+      LEFT JOIN public.empleados sup ON e.id_supervisor = sup.id
     `;
     const params = [];
     const whereConditions = [];
@@ -127,12 +132,14 @@ export const getEmpleadoById = async (id) => {
   try {
     const sql = `
       SELECT
-        e.id, e.id_cargo, e.id_usuario, e.codigo_empleado, e.cedula,
+        e.id, e.id_cargo, e.id_usuario, e.id_supervisor, e.codigo_empleado, e.cedula,
         e.nombres, e.apellidos, e.telefono, e.direccion,
         e.fecha_contratacion, e.salario_base, e.estado,
-        c.nombre AS cargo_nombre, c.horario_entrada, c.horario_salida
+        c.nombre AS cargo_nombre, c.horario_entrada, c.horario_salida,
+        CONCAT(sup.nombres, ' ', sup.apellidos) AS supervisor_nombre
       FROM public.empleados e
       LEFT JOIN public.cargos c ON e.id_cargo = c.id
+      LEFT JOIN public.empleados sup ON e.id_supervisor = sup.id
       WHERE e.id = $1;
     `;
     const result = await query(sql, [id]);
@@ -147,12 +154,14 @@ export const getEmpleadoByCodigo = async (codigo_empleado) => {
   try {
     const sql = `
       SELECT
-        e.id, e.id_cargo, e.id_usuario, e.codigo_empleado, e.cedula,
+        e.id, e.id_cargo, e.id_usuario, e.id_supervisor, e.codigo_empleado, e.cedula,
         e.nombres, e.apellidos, e.telefono, e.direccion,
         e.fecha_contratacion, e.salario_base, e.estado,
-        c.nombre AS cargo_nombre, c.horario_entrada, c.horario_salida
+        c.nombre AS cargo_nombre, c.horario_entrada, c.horario_salida,
+        CONCAT(sup.nombres, ' ', sup.apellidos) AS supervisor_nombre
       FROM public.empleados e
       LEFT JOIN public.cargos c ON e.id_cargo = c.id
+      LEFT JOIN public.empleados sup ON e.id_supervisor = sup.id
       WHERE e.codigo_empleado = $1;
     `;
     const result = await query(sql, [codigo_empleado]);
@@ -167,7 +176,7 @@ export const getEmpleadoByCedula = async (cedula) => {
   try {
     const sql = `
       SELECT
-        e.id, e.id_cargo, e.id_usuario, e.codigo_empleado, e.cedula,
+        e.id, e.id_cargo, e.id_usuario, e.id_supervisor, e.codigo_empleado, e.cedula,
         e.nombres, e.apellidos, e.telefono, e.direccion,
         e.fecha_contratacion, e.salario_base, e.estado
       FROM public.empleados e
@@ -190,6 +199,7 @@ export const updateEmpleado = async (id, updateData) => {
     const allowedFields = [
       "id_cargo",
       "id_usuario",
+      "id_supervisor",
       "codigo_empleado",
       "cedula",
       "nombres",
@@ -217,7 +227,7 @@ export const updateEmpleado = async (id, updateData) => {
       SET ${fields.join(", ")}
       WHERE id = $${paramIndex}
       RETURNING
-        id, id_cargo, id_usuario, codigo_empleado, cedula,
+        id, id_cargo, id_usuario, id_supervisor, codigo_empleado, cedula,
         nombres, apellidos, telefono, direccion,
         fecha_contratacion, salario_base, estado;
     `;

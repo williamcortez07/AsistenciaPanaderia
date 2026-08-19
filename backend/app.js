@@ -13,6 +13,7 @@ import vacacionesRoutes from "./src/modules/vacaciones/vacacionesRoutes.js";
 import evaluacionesRoutes from "./src/modules/evaluaciones/evaluacionesRoutes.js";
 import errorHandler from "./src/middlewares/errorHanddleware.js";
 import { setupSwagger, swaggerSpec } from "./src/config/swagger.js";
+import { initializeEvaluacionesTables } from "./src/config/dbInit.js";
 
 const app = express();
 
@@ -79,6 +80,9 @@ function logStartupInfo(port) {
 }
 
 export function startServer(port = env.PORT) {
+  initializeEvaluacionesTables().catch((err) =>
+    console.error("Error al inicializar tablas de evaluaciones:", err)
+  );
   return app.listen(port, () => {
     logStartupInfo(port);
   });

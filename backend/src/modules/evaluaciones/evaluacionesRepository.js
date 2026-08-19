@@ -412,13 +412,18 @@ export const getEvaluaciones = async ({
     let sql = `
       SELECT
         ev.id, ev.id_empleado, ev.id_periodo, ev.id_evaluador,
-        ev.fecha_evaluacion, ev.estado, ev.puntuacion_total, ev.observaciones, ev.fecha_cierre,
+        ev.fecha_evaluacion, ev.estado, ev.puntuacion_total, 
+        ev.observaciones, ev.fortalezas, ev.areas_oportunidad, ev.comentarios_empleado, ev.fecha_cierre,
         e.codigo_empleado, e.cedula, e.nombres AS empleado_nombres, e.apellidos AS empleado_apellidos,
+        c.nombre AS cargo_nombre,
+        CONCAT(sup.nombres, ' ', sup.apellidos) AS supervisor_nombre,
         p.nombre AS periodo_nombre,
         u.correo AS evaluador_nombre,
         COUNT(*) OVER() AS total_count
       FROM public.evaluaciones_desempeno ev
       JOIN public.empleados e ON e.id = ev.id_empleado
+      LEFT JOIN public.cargos c ON c.id = e.id_cargo
+      LEFT JOIN public.empleados sup ON sup.id = e.id_supervisor
       JOIN public.periodos_evaluacion p ON p.id = ev.id_periodo
       LEFT JOIN public.usuarios u ON u.id = ev.id_evaluador
     `;
@@ -468,14 +473,22 @@ export const getEvaluacionById = async (id) => {
     const sql = `
       SELECT
         ev.id, ev.id_empleado, ev.id_periodo, ev.id_evaluador,
-        ev.fecha_evaluacion, ev.estado, ev.puntuacion_total, ev.observaciones, ev.fecha_cierre,
+        ev.fecha_evaluacion, ev.estado, ev.puntuacion_total, 
+        ev.observaciones, ev.fortalezas, ev.areas_oportunidad, ev.comentarios_empleado, ev.fecha_cierre,
         e.codigo_empleado, e.cedula, e.nombres AS empleado_nombres, e.apellidos AS empleado_apellidos,
-        p.nombre AS periodo_nombre, p.estado AS periodo_estado,
-        u.correo AS evaluador_nombre
+        e.fecha_contratacion AS empleado_fecha_contratacion,
+        c.nombre AS cargo_nombre,
+        CONCAT(sup.nombres, ' ', sup.apellidos) AS supervisor_nombre,
+        p.nombre AS periodo_nombre, p.fecha_inicio AS periodo_fecha_inicio, p.fecha_fin AS periodo_fecha_fin, p.estado AS periodo_estado,
+        u.correo AS evaluador_nombre,
+        r.nombre AS evaluador_rol
       FROM public.evaluaciones_desempeno ev
       JOIN public.empleados e ON e.id = ev.id_empleado
+      LEFT JOIN public.cargos c ON c.id = e.id_cargo
+      LEFT JOIN public.empleados sup ON sup.id = e.id_supervisor
       JOIN public.periodos_evaluacion p ON p.id = ev.id_periodo
       LEFT JOIN public.usuarios u ON u.id = ev.id_evaluador
+      LEFT JOIN public.roles r ON r.id = u.id_rol
       WHERE ev.id = $1;
     `;
     const res = await query(sql, [id]);
@@ -492,7 +505,14 @@ export const updateEvaluacion = async (id, updateData) => {
     const values = [];
     let idx = 1;
 
-    const allowed = ["id_evaluador", "observaciones"];
+    const allowed = [
+      "id_evaluador",
+      "observaciones",
+      "fortalezas",
+      "areas_oportunidad",
+      "comentarios_empleado",
+      "modificado_por",
+    ];
     for (const field of allowed) {
       if (updateData[field] !== undefined) {
         fields.push(`${field} = $${idx}`);
@@ -503,12 +523,13 @@ export const updateEvaluacion = async (id, updateData) => {
 
     if (fields.length === 0) return null;
 
+    fields.push(`fecha_modificacion = NOW()`);
     values.push(id);
     const sql = `
       UPDATE public.evaluaciones_desempeno
       SET ${fields.join(", ")}
       WHERE id = $${idx}
-      RETURNING id, id_empleado, id_periodo, id_evaluador, fecha_evaluacion, estado, puntuacion_total, observaciones, fecha_cierre;
+      RETURNING id, id_empleado, id_periodo, id_evaluador, fecha_evaluacion, estado, puntuacion_total, observaciones, fortalezas, areas_oportunidad, comentarios_empleado, fecha_cierre;
     `;
     const res = await query(sql, values);
     return res.rows[0] || null;
@@ -777,5 +798,365 @@ export const deleteObjetivo = async (id) => {
   } catch (err) {
     logger.error({ err, id }, "Error en deleteObjetivo");
     throw new Error("Error al eliminar el objetivo");
+  }
+};
+
+// ==========================================
+// 7. PREGUNTAS DE EVALUACIÓN (CHECKLIST)
+// ==========================================
+
+export const getPreguntas = async ({ id_criterio = null, activo = null } = {}) => {
+  try {
+    let sql = `
+      SELECT
+        p.id, p.id_criterio, p.texto, p.tipo_respuesta, p.puntuacion_maxima, p.orden, p.activo, p.fecha_creacion,
+        c.nombre AS criterio_nombre
+      FROM public.preguntas_evaluacion p
+      JOIN public.criterios_evaluacion c ON c.id = p.id_criterio
+    `;
+    const params = [];
+    const conds = [];
+
+    if (id_criterio) {
+      params.push(id_criterio);
+      conds.push(`p.id_criterio = $${params.length}`);
+    }
+    if (activo !== null) {
+      params.push(activo);
+      conds.push(`p.activo = $${params.length}`);
+    }
+
+    if (conds.length > 0) {
+      sql += ` WHERE ${conds.join(" AND ")}`;
+    }
+
+    sql += ` ORDER BY c.orden ASC, p.orden ASC;`;
+    const res = await query(sql, params);
+    return res.rows;
+  } catch (err) {
+    logger.error({ err }, "Error en getPreguntas");
+    throw new Error("Error al obtener preguntas del checklist");
+  }
+};
+
+export const getPreguntaById = async (id) => {
+  try {
+    const sql = `
+      SELECT p.*, c.nombre AS criterio_nombre
+      FROM public.preguntas_evaluacion p
+      JOIN public.criterios_evaluacion c ON c.id = p.id_criterio
+      WHERE p.id = $1;
+    `;
+    const res = await query(sql, [id]);
+    return res.rows[0] || null;
+  } catch (err) {
+    logger.error({ err, id }, "Error en getPreguntaById");
+    throw new Error("Error al consultar pregunta");
+  }
+};
+
+export const createPregunta = async ({ id_criterio, texto, tipo_respuesta = "escala_1_5", puntuacion_maxima = 5, orden = 1, activo = true }) => {
+  try {
+    const sql = `
+      INSERT INTO public.preguntas_evaluacion (id_criterio, texto, tipo_respuesta, puntuacion_maxima, orden, activo)
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING *;
+    `;
+    const res = await query(sql, [id_criterio, texto, tipo_respuesta, puntuacion_maxima, orden, activo]);
+    return res.rows[0];
+  } catch (err) {
+    logger.error({ err }, "Error en createPregunta");
+    throw new Error("Error al crear la pregunta");
+  }
+};
+
+export const updatePregunta = async (id, updateData) => {
+  try {
+    const fields = [];
+    const values = [];
+    let idx = 1;
+    const allowed = ["id_criterio", "texto", "tipo_respuesta", "puntuacion_maxima", "orden", "activo"];
+    for (const field of allowed) {
+      if (updateData[field] !== undefined) {
+        fields.push(`${field} = $${idx}`);
+        values.push(updateData[field]);
+        idx++;
+      }
+    }
+    if (fields.length === 0) return null;
+    values.push(id);
+    const sql = `UPDATE public.preguntas_evaluacion SET ${fields.join(", ")} WHERE id = $${idx} RETURNING *;`;
+    const res = await query(sql, values);
+    return res.rows[0] || null;
+  } catch (err) {
+    logger.error({ err, id }, "Error en updatePregunta");
+    throw new Error("Error al actualizar la pregunta");
+  }
+};
+
+export const deletePregunta = async (id) => {
+  try {
+    const sql = `DELETE FROM public.preguntas_evaluacion WHERE id = $1 RETURNING id;`;
+    const res = await query(sql, [id]);
+    return res.rows[0] || null;
+  } catch (err) {
+    logger.error({ err, id }, "Error en deletePregunta");
+    throw new Error("Error al eliminar la pregunta");
+  }
+};
+
+// ==========================================
+// 8. RESPUESTAS DETALLADAS A PREGUNTAS
+// ==========================================
+
+export const getRespuestasByEvaluacionId = async (id_evaluacion) => {
+  try {
+    const sql = `
+      SELECT
+        re.id, re.id_evaluacion, re.id_pregunta, re.id_criterio_periodo, re.puntuacion, re.comentario,
+        p.texto AS pregunta_texto, p.orden AS pregunta_orden,
+        c.nombre AS criterio_nombre, c.id AS id_criterio
+      FROM public.respuestas_evaluacion re
+      JOIN public.preguntas_evaluacion p ON p.id = re.id_pregunta
+      JOIN public.criterios_evaluacion c ON c.id = p.id_criterio
+      WHERE re.id_evaluacion = $1
+      ORDER BY c.orden ASC, p.orden ASC;
+    `;
+    const res = await query(sql, [id_evaluacion]);
+    return res.rows;
+  } catch (err) {
+    logger.error({ err, id_evaluacion }, "Error en getRespuestasByEvaluacionId");
+    throw new Error("Error al consultar respuestas detalladas");
+  }
+};
+
+export const upsertRespuestaWithClient = async (
+  client,
+  { id_evaluacion, id_pregunta, id_criterio_periodo, puntuacion, comentario = null }
+) => {
+  const sql = `
+    INSERT INTO public.respuestas_evaluacion (id_evaluacion, id_pregunta, id_criterio_periodo, puntuacion, comentario)
+    VALUES ($1, $2, $3, $4, $5)
+    ON CONFLICT (id_evaluacion, id_pregunta)
+    DO UPDATE SET
+      puntuacion = EXCLUDED.puntuacion,
+      comentario = EXCLUDED.comentario,
+      id_criterio_periodo = EXCLUDED.id_criterio_periodo
+    RETURNING id, id_evaluacion, id_pregunta, puntuacion, comentario;
+  `;
+  const res = await client.query(sql, [
+    id_evaluacion,
+    id_pregunta,
+    id_criterio_periodo,
+    puntuacion,
+    comentario,
+  ]);
+  return res.rows[0];
+};
+
+// ==========================================
+// 9. PLANES DE MEJORA CONTINUA
+// ==========================================
+
+export const createPlanMejora = async ({
+  id_evaluacion = null,
+  id_empleado,
+  id_criterio = null,
+  problema_detectado,
+  objetivo_mejora,
+  acciones_propuestas,
+  responsable = null,
+  fecha_inicio = null,
+  fecha_limite = null,
+  porcentaje_avance = 0,
+  estado = "pendiente",
+  observaciones = null,
+}) => {
+  try {
+    const sql = `
+      INSERT INTO public.planes_mejora (
+        id_evaluacion, id_empleado, id_criterio, problema_detectado, objetivo_mejora,
+        acciones_propuestas, responsable, fecha_inicio, fecha_limite, porcentaje_avance, estado, observaciones
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      RETURNING *;
+    `;
+    const res = await query(sql, [
+      id_evaluacion,
+      id_empleado,
+      id_criterio,
+      problema_detectado,
+      objetivo_mejora,
+      acciones_propuestas,
+      responsable,
+      fecha_inicio,
+      fecha_limite,
+      porcentaje_avance,
+      estado,
+      observaciones,
+    ]);
+    return res.rows[0];
+  } catch (err) {
+    logger.error({ err }, "Error en createPlanMejora");
+    throw new Error("Error al crear el plan de mejora");
+  }
+};
+
+export const getPlanesMejora = async ({ id_empleado = null, id_evaluacion = null, estado = null } = {}) => {
+  try {
+    let sql = `
+      SELECT
+        pm.*,
+        e.nombres AS empleado_nombres, e.apellidos AS empleado_apellidos, e.codigo_empleado,
+        c.nombre AS criterio_nombre
+      FROM public.planes_mejora pm
+      JOIN public.empleados e ON e.id = pm.id_empleado
+      LEFT JOIN public.criterios_evaluacion c ON c.id = pm.id_criterio
+    `;
+    const params = [];
+    const conds = [];
+
+    if (id_empleado) {
+      params.push(id_empleado);
+      conds.push(`pm.id_empleado = $${params.length}`);
+    }
+    if (id_evaluacion) {
+      params.push(id_evaluacion);
+      conds.push(`pm.id_evaluacion = $${params.length}`);
+    }
+    if (estado) {
+      params.push(estado);
+      conds.push(`pm.estado = $${params.length}`);
+    }
+
+    if (conds.length > 0) {
+      sql += ` WHERE ${conds.join(" AND ")}`;
+    }
+
+    sql += ` ORDER BY pm.fecha_creacion DESC;`;
+    const res = await query(sql, params);
+    return res.rows;
+  } catch (err) {
+    logger.error({ err }, "Error en getPlanesMejora");
+    throw new Error("Error al consultar planes de mejora");
+  }
+};
+
+export const getPlanMejoraById = async (id) => {
+  try {
+    const sql = `
+      SELECT pm.*, e.nombres AS empleado_nombres, e.apellidos AS empleado_apellidos, c.nombre AS criterio_nombre
+      FROM public.planes_mejora pm
+      JOIN public.empleados e ON e.id = pm.id_empleado
+      LEFT JOIN public.criterios_evaluacion c ON c.id = pm.id_criterio
+      WHERE pm.id = $1;
+    `;
+    const res = await query(sql, [id]);
+    return res.rows[0] || null;
+  } catch (err) {
+    logger.error({ err, id }, "Error en getPlanMejoraById");
+    throw new Error("Error al consultar plan de mejora por ID");
+  }
+};
+
+export const updatePlanMejora = async (id, updateData) => {
+  try {
+    const fields = [];
+    const values = [];
+    let idx = 1;
+    const allowed = [
+      "problema_detectado",
+      "objetivo_mejora",
+      "acciones_propuestas",
+      "responsable",
+      "fecha_inicio",
+      "fecha_limite",
+      "porcentaje_avance",
+      "estado",
+      "observaciones",
+      "resultado_final",
+    ];
+    for (const field of allowed) {
+      if (updateData[field] !== undefined) {
+        fields.push(`${field} = $${idx}`);
+        values.push(updateData[field]);
+        idx++;
+      }
+    }
+    if (fields.length === 0) return null;
+    values.push(id);
+    const sql = `UPDATE public.planes_mejora SET ${fields.join(", ")} WHERE id = $${idx} RETURNING *;`;
+    const res = await query(sql, values);
+    return res.rows[0] || null;
+  } catch (err) {
+    logger.error({ err, id }, "Error en updatePlanMejora");
+    throw new Error("Error al actualizar el plan de mejora");
+  }
+};
+
+export const deletePlanMejora = async (id) => {
+  try {
+    const sql = `DELETE FROM public.planes_mejora WHERE id = $1 RETURNING id;`;
+    const res = await query(sql, [id]);
+    return res.rows[0] || null;
+  } catch (err) {
+    logger.error({ err, id }, "Error en deletePlanMejora");
+    throw new Error("Error al eliminar el plan de mejora");
+  }
+};
+
+// ==========================================
+// 10. METRICAS Y DASHBOARD DE EVALUACIÓN
+// ==========================================
+
+export const getDashboardStats = async (id_periodo = null) => {
+  try {
+    const params = [];
+    let periodWhere = "";
+    if (id_periodo) {
+      params.push(id_periodo);
+      periodWhere = ` WHERE ev.id_periodo = $1`;
+    }
+
+    const sqlTotals = `
+      SELECT
+        (SELECT COUNT(*) FROM public.empleados WHERE estado = 'activo') AS total_empleados,
+        COUNT(DISTINCT ev.id_empleado) AS empleados_evaluados,
+        COUNT(ev.id) AS total_evaluaciones,
+        COUNT(CASE WHEN ev.estado = 'borrador' THEN 1 END) AS evaluaciones_borrador,
+        COUNT(CASE WHEN ev.estado = 'en_proceso' THEN 1 END) AS evaluaciones_en_proceso,
+        COUNT(CASE WHEN ev.estado = 'completada' THEN 1 END) AS evaluaciones_completadas,
+        COUNT(CASE WHEN ev.estado = 'aprobada' THEN 1 END) AS evaluaciones_aprobadas,
+        COALESCE(ROUND(AVG(ev.puntuacion_total), 2), 0) AS promedio_general_nota,
+        COUNT(CASE WHEN ev.puntuacion_total < 70 AND ev.estado IN ('completada', 'aprobada') THEN 1 END) AS bajo_desempeno_count
+      FROM public.evaluaciones_desempeno ev
+      ${periodWhere};
+    `;
+    const totalsRes = await query(sqlTotals, params);
+
+    const sqlPlanes = `SELECT COUNT(*) AS active_plans FROM public.planes_mejora WHERE estado IN ('pendiente', 'en_progreso');`;
+    const planesRes = await query(sqlPlanes);
+
+    const sqlPorCargo = `
+      SELECT
+        COALESCE(c.nombre, 'Sin Cargo') AS cargo_nombre,
+        COUNT(ev.id) AS total_evaluaciones,
+        COALESCE(ROUND(AVG(ev.puntuacion_total), 2), 0) AS promedio_nota
+      FROM public.evaluaciones_desempeno ev
+      JOIN public.empleados e ON e.id = ev.id_empleado
+      LEFT JOIN public.cargos c ON c.id = e.id_cargo
+      ${periodWhere}
+      GROUP BY c.nombre;
+    `;
+    const porCargoRes = await query(sqlPorCargo, params);
+
+    return {
+      totals: totalsRes.rows[0],
+      planes_activos: parseInt(planesRes.rows[0].active_plans, 10),
+      por_cargo: porCargoRes.rows,
+    };
+  } catch (err) {
+    logger.error({ err, id_periodo }, "Error en getDashboardStats");
+    throw new Error("Error al obtener estadísticas del dashboard");
   }
 };

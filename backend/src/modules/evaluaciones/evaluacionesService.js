@@ -440,3 +440,246 @@ export const deleteObjetivoService = async (id) => {
 
   return await repo.deleteObjetivo(id);
 };
+
+// ==========================================
+// 7. PREGUNTAS DEL CHECKLIST
+// ==========================================
+
+export const getPreguntasService = async (queryParams = {}) => {
+  const activo = queryParams.activo !== undefined ? queryParams.activo === "true" : null;
+  return await repo.getPreguntas({
+    id_criterio: queryParams.id_criterio || null,
+    activo,
+  });
+};
+
+export const getPreguntaByIdService = async (id) => {
+  const pregunta = await repo.getPreguntaById(id);
+  if (!pregunta) {
+    const err = new Error("Pregunta de evaluación no encontrada");
+    err.statusCode = 404;
+    throw err;
+  }
+  return pregunta;
+};
+
+export const createPreguntaService = async (preguntaData) => {
+  const criterio = await repo.getCriterioById(preguntaData.id_criterio);
+  if (!criterio) {
+    const err = new Error("El criterio especificado no existe");
+    err.statusCode = 404;
+    throw err;
+  }
+  return await repo.createPregunta(preguntaData);
+};
+
+export const updatePreguntaService = async (id, updateData) => {
+  const existing = await repo.getPreguntaById(id);
+  if (!existing) {
+    const err = new Error("Pregunta de evaluación no encontrada");
+    err.statusCode = 404;
+    throw err;
+  }
+  return await repo.updatePregunta(id, updateData);
+};
+
+export const deletePreguntaService = async (id) => {
+  const existing = await repo.getPreguntaById(id);
+  if (!existing) {
+    const err = new Error("Pregunta de evaluación no encontrada");
+    err.statusCode = 404;
+    throw err;
+  }
+  return await repo.deletePregunta(id);
+};
+
+// ==========================================
+// 8. RESPUESTAS POR PREGUNTA (CHECKLIST DETALLADO)
+// ==========================================
+
+export const getRespuestasByEvaluacionIdService = async (id_evaluacion) => {
+  const evaluacion = await repo.getEvaluacionById(id_evaluacion);
+  if (!evaluacion) {
+    const err = new Error("Evaluación de desempeño no encontrada");
+    err.statusCode = 404;
+    throw err;
+  }
+  return await repo.getRespuestasByEvaluacionId(id_evaluacion);
+};
+
+export const saveRespuestasItemizedBulkService = async (
+  id_evaluacion,
+  { respuestas = [], observaciones = null, fortalezas = null, areas_oportunidad = null, comentarios_empleado = null, userId = null }
+) => {
+  const evaluacion = await repo.getEvaluacionById(id_evaluacion);
+  if (!evaluacion) {
+    const err = new Error("Evaluación de desempeño no encontrada");
+    err.statusCode = 404;
+    throw err;
+  }
+
+  if (evaluacion.estado === "aprobada" || evaluacion.estado === "cancelada") {
+    const err = new Error(`No se pueden calificar evaluaciones en estado '${evaluacion.estado}'`);
+    err.statusCode = 400;
+    throw err;
+  }
+
+  // Verificar que los criterios del periodo sumen 100%
+  const criteriosPeriodo = await repo.getCriteriosByPeriodoId(evaluacion.id_periodo);
+  const totalPonderacion = await repo.getSumPonderacionByPeriodo(evaluacion.id_periodo);
+
+  if (criteriosPeriodo.length === 0) {
+    const err = new Error("El periodo no tiene criterios ni ponderaciones configuradas");
+    err.statusCode = 400;
+    throw err;
+  }
+
+  const client = await getClient();
+  try {
+    await client.query("BEGIN");
+
+    // Map id_pregunta -> id_criterio y su id_criterio_periodo
+    const preguntasList = await repo.getPreguntas();
+    const preguntasMap = new Map();
+    preguntasList.forEach((p) => preguntasMap.set(p.id, p));
+
+    const critPeriodoMap = new Map();
+    criteriosPeriodo.forEach((cp) => critPeriodoMap.set(cp.id_criterio, cp));
+
+    // Guardar cada respuesta individual
+    const scoresPerCriterion = new Map(); // id_criterio_periodo -> array de puntuaciones (1-5)
+
+    for (const r of respuestas) {
+      const preg = preguntasMap.get(r.id_pregunta);
+      if (!preg) continue;
+
+      const cp = critPeriodoMap.get(preg.id_criterio);
+      const id_cp = cp ? cp.id : null;
+
+      await repo.upsertRespuestaWithClient(client, {
+        id_evaluacion,
+        id_pregunta: r.id_pregunta,
+        id_criterio_periodo: id_cp,
+        puntuacion: r.puntuacion,
+        comentario: r.comentario || null,
+      });
+
+      if (id_cp) {
+        if (!scoresPerCriterion.has(id_cp)) {
+          scoresPerCriterion.set(id_cp, []);
+        }
+        scoresPerCriterion.get(id_cp).push(r.puntuacion);
+      }
+    }
+
+    // Calcular el promedio por criterio y guardarlo en resultados_evaluacion
+    let totalPuntuacionWeighted = 0;
+
+    for (const cp of criteriosPeriodo) {
+      const scores = scoresPerCriterion.get(cp.id) || [];
+      let scorePromedio0to100 = 0;
+
+      if (scores.length > 0) {
+        const sum1to5 = scores.reduce((a, b) => a + b, 0);
+        const avg1to5 = sum1to5 / scores.length;
+        scorePromedio0to100 = (avg1to5 / 5) * 100;
+      }
+
+      await repo.upsertResultadoWithClient(client, {
+        id_evaluacion,
+        id_criterio_periodo: cp.id,
+        puntuacion: scorePromedio0to100,
+        comentario: `Promedio de ${scores.length} preguntas respondidas`,
+        cumplido: scorePromedio0to100 >= 70,
+      });
+
+      const weightedContribution = (scorePromedio0to100 / 100) * cp.ponderacion;
+      totalPuntuacionWeighted += weightedContribution;
+    }
+
+    // Redondear puntuacion final a 2 decimales
+    totalPuntuacionWeighted = Math.round(totalPuntuacionWeighted * 100) / 100;
+
+    // Actualizar la evaluación
+    await repo.updateEvaluacion(id_evaluacion, {
+      observaciones,
+      fortalezas,
+      areas_oportunidad,
+      comentarios_empleado,
+      modificado_por: userId,
+    });
+
+    await repo.updatePuntuacionTotalEvaluacion(id_evaluacion, totalPuntuacionWeighted);
+    await repo.updateEstadoEvaluacion(id_evaluacion, "completada", new Date());
+
+    await client.query("COMMIT");
+
+    return {
+      id_evaluacion,
+      puntuacion_total: totalPuntuacionWeighted,
+      estado: "completada",
+      total_respuestas_guardadas: respuestas.length,
+      total_ponderacion_periodo: totalPonderacion,
+    };
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+// ==========================================
+// 9. PLANES DE MEJORA CONTINUA
+// ==========================================
+
+export const createPlanMejoraService = async (planData) => {
+  const empleado = await repo.getEvaluacionById(planData.id_empleado);
+  return await repo.createPlanMejora(planData);
+};
+
+export const getPlanesMejoraService = async (queryParams = {}) => {
+  return await repo.getPlanesMejora({
+    id_empleado: queryParams.id_empleado || null,
+    id_evaluacion: queryParams.id_evaluacion || null,
+    estado: queryParams.estado || null,
+  });
+};
+
+export const getPlanMejoraByIdService = async (id) => {
+  const plan = await repo.getPlanMejoraById(id);
+  if (!plan) {
+    const err = new Error("Plan de mejora no encontrado");
+    err.statusCode = 404;
+    throw err;
+  }
+  return plan;
+};
+
+export const updatePlanMejoraService = async (id, updateData) => {
+  const existing = await repo.getPlanMejoraById(id);
+  if (!existing) {
+    const err = new Error("Plan de mejora no encontrado");
+    err.statusCode = 404;
+    throw err;
+  }
+  return await repo.updatePlanMejora(id, updateData);
+};
+
+export const deletePlanMejoraService = async (id) => {
+  const existing = await repo.getPlanMejoraById(id);
+  if (!existing) {
+    const err = new Error("Plan de mejora no encontrado");
+    err.statusCode = 404;
+    throw err;
+  }
+  return await repo.deletePlanMejora(id);
+};
+
+// ==========================================
+// 10. DASHBOARD STATS
+// ==========================================
+
+export const getDashboardStatsService = async (queryParams = {}) => {
+  return await repo.getDashboardStats(queryParams.id_periodo || null);
+};

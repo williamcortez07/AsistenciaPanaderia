@@ -282,3 +282,142 @@ export const deleteObjetivo = asyncWrapper(async (req, res) => {
     data: result,
   });
 });
+
+// ==========================================
+// 7. PREGUNTAS DE EVALUACIÓN
+// ==========================================
+
+export const getPreguntas = asyncWrapper(async (req, res) => {
+  const result = await service.getPreguntasService(req.query);
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
+
+export const getPreguntaById = asyncWrapper(async (req, res) => {
+  const { id } = req.params;
+  const result = await service.getPreguntaByIdService(id);
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
+
+export const createPregunta = asyncWrapper(async (req, res) => {
+  const result = await service.createPreguntaService(req.body);
+  res.status(201).json({
+    success: true,
+    message: "Pregunta del checklist creada exitosamente",
+    data: result,
+  });
+});
+
+export const updatePregunta = asyncWrapper(async (req, res) => {
+  const { id } = req.params;
+  const result = await service.updatePreguntaService(id, req.body);
+  res.status(200).json({
+    success: true,
+    message: "Pregunta del checklist actualizada exitosamente",
+    data: result,
+  });
+});
+
+export const deletePregunta = asyncWrapper(async (req, res) => {
+  const { id } = req.params;
+  const result = await service.deletePreguntaService(id);
+  res.status(200).json({
+    success: true,
+    message: "Pregunta del checklist eliminada exitosamente",
+    data: result,
+  });
+});
+
+// ==========================================
+// 8. RESPUESTAS DETALLADAS DEL CHECKLIST
+// ==========================================
+
+export const getRespuestasByEvaluacionId = asyncWrapper(async (req, res) => {
+  const { id_evaluacion } = req.params;
+  const result = await service.getRespuestasByEvaluacionIdService(id_evaluacion);
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
+
+export const saveRespuestasItemizedBulk = asyncWrapper(async (req, res) => {
+  const { id_evaluacion } = req.params;
+  const userId = req.user ? req.user.id : null;
+  const result = await service.saveRespuestasItemizedBulkService(id_evaluacion, {
+    ...req.body,
+    userId,
+  });
+  res.status(200).json({
+    success: true,
+    message: "Checklist completado y evaluación calculada exitosamente",
+    data: result,
+  });
+});
+
+// ==========================================
+// 9. PLANES DE MEJORA CONTINUA
+// ==========================================
+
+export const getPlanesMejora = asyncWrapper(async (req, res) => {
+  const result = await service.getPlanesMejoraService(req.query);
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
+
+export const getPlanMejoraById = asyncWrapper(async (req, res) => {
+  const { id } = req.params;
+  const result = await service.getPlanMejoraByIdService(id);
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
+
+export const createPlanMejora = asyncWrapper(async (req, res) => {
+  const result = await service.createPlanMejoraService(req.body);
+  res.status(201).json({
+    success: true,
+    message: "Plan de mejora creado exitosamente",
+    data: result,
+  });
+});
+
+export const updatePlanMejora = asyncWrapper(async (req, res) => {
+  const { id } = req.params;
+  const result = await service.updatePlanMejoraService(id, req.body);
+  res.status(200).json({
+    success: true,
+    message: "Plan de mejora actualizado exitosamente",
+    data: result,
+  });
+});
+
+export const deletePlanMejora = asyncWrapper(async (req, res) => {
+  const { id } = req.params;
+  const result = await service.deletePlanMejoraService(id);
+  res.status(200).json({
+    success: true,
+    message: "Plan de mejora eliminado exitosamente",
+    data: result,
+  });
+});
+
+// ==========================================
+// 10. METRICAS Y DASHBOARD DE EVALUACIÓN
+// ==========================================
+
+export const getDashboardStats = asyncWrapper(async (req, res) => {
+  const result = await service.getDashboardStatsService(req.query);
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});

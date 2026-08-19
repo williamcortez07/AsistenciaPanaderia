@@ -23,12 +23,40 @@ import {
   genericIdParamSchema,
   genericPeriodoIdParamSchema,
   genericEvaluacionIdParamSchema,
+  createPreguntaSchema,
+  updatePreguntaSchema,
+  saveRespuestasItemizedBulkSchema,
+  createPlanMejoraSchema,
+  updatePlanMejoraSchema,
 } from "./evaluacionesSchema.js";
 
 const router = Router();
 
 // Middleware de autenticación global para el módulo
 router.use(authenticate);
+
+// ==========================================
+// 0. METRICAS Y DASHBOARD DE EVALUACIÓN
+// ==========================================
+router.get("/dashboard/stats", controller.getDashboardStats);
+
+// ==========================================
+// 0.1 PREGUNTAS DE EVALUACIÓN (CHECKLIST)
+// ==========================================
+router.get("/preguntas", controller.getPreguntas);
+router.post("/preguntas", validateRequest(createPreguntaSchema), controller.createPregunta);
+router.get("/preguntas/:id", validateRequest(genericIdParamSchema), controller.getPreguntaById);
+router.put("/preguntas/:id", validateRequest(updatePreguntaSchema), controller.updatePregunta);
+router.delete("/preguntas/:id", validateRequest(genericIdParamSchema), controller.deletePregunta);
+
+// ==========================================
+// 0.2 PLANES DE MEJORA CONTINUA
+// ==========================================
+router.get("/planes-mejora", controller.getPlanesMejora);
+router.post("/planes-mejora", validateRequest(createPlanMejoraSchema), controller.createPlanMejora);
+router.get("/planes-mejora/:id", validateRequest(genericIdParamSchema), controller.getPlanMejoraById);
+router.put("/planes-mejora/:id", validateRequest(updatePlanMejoraSchema), controller.updatePlanMejora);
+router.delete("/planes-mejora/:id", validateRequest(genericIdParamSchema), controller.deletePlanMejora);
 
 /**
  * @openapi
@@ -468,23 +496,32 @@ router.post(
 /**
  * @openapi
  * /api/v1/evaluaciones/{id_evaluacion}/resultados:
+ * /api/v1/evaluaciones/{id_evaluacion}/respuestas:
  *   get:
  *     summary: Obtener calificaciones de la checklist para una evaluación específica
  *     tags: [Evaluaciones - Checklist Resultados]
+ *   put:
+ *     summary: Guardar / Actualizar en lote (bulk) las puntuaciones y comentarios de la checklist
+ *     tags: [Evaluaciones - Checklist Resultados]
  */
+router.get(
+  "/:id_evaluacion/respuestas",
+  validateRequest(genericEvaluacionIdParamSchema),
+  controller.getRespuestasByEvaluacionId
+);
+
+router.put(
+  "/:id_evaluacion/respuestas/bulk",
+  validateRequest(saveRespuestasItemizedBulkSchema),
+  controller.saveRespuestasItemizedBulk
+);
+
 router.get(
   "/:id_evaluacion/resultados",
   validateRequest(genericEvaluacionIdParamSchema),
   controller.getResultadosByEvaluacionId
 );
 
-/**
- * @openapi
- * /api/v1/evaluaciones/{id_evaluacion}/resultados/bulk:
- *   put:
- *     summary: Guardar / Actualizar en lote (bulk) las puntuaciones y comentarios de la checklist
- *     tags: [Evaluaciones - Checklist Resultados]
- */
 router.put(
   "/:id_evaluacion/resultados/bulk",
   validateRequest(saveResultadosBulkSchema),

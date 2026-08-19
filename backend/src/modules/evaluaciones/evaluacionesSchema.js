@@ -308,3 +308,106 @@ export const genericEvaluacionIdParamSchema = z.object({
     id_evaluacion: uuidSchema,
   }),
 });
+
+// --- PREGUNTAS DEL CHECKLIST ---
+export const createPreguntaSchema = z.object({
+  body: z.object({
+    id_criterio: uuidSchema,
+    texto: z.string().trim().min(1, "El texto de la pregunta es requerido"),
+    tipo_respuesta: z.string().trim().default("escala_1_5"),
+    puntuacion_maxima: z.coerce.number().int().positive().default(5),
+    orden: z.coerce.number().int().default(1),
+    activo: z.boolean().default(true),
+  }),
+  query: z.any(),
+  params: z.any(),
+});
+
+export const updatePreguntaSchema = z.object({
+  body: z
+    .object({
+      id_criterio: uuidSchema.optional(),
+      texto: z.string().trim().min(1).optional(),
+      tipo_respuesta: z.string().trim().optional(),
+      puntuacion_maxima: z.coerce.number().int().positive().optional(),
+      orden: z.coerce.number().int().optional(),
+      activo: z.boolean().optional(),
+    })
+    .refine((data) => Object.keys(data).length > 0, {
+      message: "Debe enviar al menos un campo a actualizar",
+    }),
+  query: z.any(),
+  params: z.object({
+    id: uuidSchema,
+  }),
+});
+
+// --- RESPUESTAS DETALLADAS ITEMIZED BULK ---
+export const saveRespuestasItemizedBulkSchema = z.object({
+  body: z.object({
+    respuestas: z
+      .array(
+        z.object({
+          id_pregunta: uuidSchema,
+          puntuacion: z.coerce
+            .number()
+            .int()
+            .min(1, "La puntuación debe ser entre 1 y 5")
+            .max(5, "La puntuación debe ser entre 1 y 5"),
+          comentario: z.string().trim().optional().nullable(),
+        })
+      )
+      .min(1, "Debe enviar al menos una respuesta"),
+    observaciones: z.string().trim().optional().nullable(),
+    fortalezas: z.string().trim().optional().nullable(),
+    areas_oportunidad: z.string().trim().optional().nullable(),
+    comentarios_empleado: z.string().trim().optional().nullable(),
+  }),
+  query: z.any(),
+  params: z.object({
+    id_evaluacion: uuidSchema,
+  }),
+});
+
+// --- PLANES DE MEJORA ---
+export const createPlanMejoraSchema = z.object({
+  body: z.object({
+    id_empleado: uuidSchema,
+    id_evaluacion: uuidSchema.optional().nullable(),
+    id_criterio: uuidSchema.optional().nullable(),
+    problema_detectado: z.string().trim().min(1, "El problema detectado es requerido"),
+    objetivo_mejora: z.string().trim().min(1, "El objetivo de mejora es requerido"),
+    acciones_propuestas: z.string().trim().min(1, "Las acciones propuestas son requeridas"),
+    responsable: z.string().trim().optional().nullable(),
+    fecha_inicio: z.string().regex(dateRegex).optional().nullable(),
+    fecha_limite: z.string().regex(dateRegex).optional().nullable(),
+    porcentaje_avance: z.coerce.number().min(0).max(100).default(0),
+    estado: z.enum(["pendiente", "en_progreso", "completado", "cancelado"]).default("pendiente"),
+    observaciones: z.string().trim().optional().nullable(),
+  }),
+  query: z.any(),
+  params: z.any(),
+});
+
+export const updatePlanMejoraSchema = z.object({
+  body: z
+    .object({
+      problema_detectado: z.string().trim().min(1).optional(),
+      objetivo_mejora: z.string().trim().min(1).optional(),
+      acciones_propuestas: z.string().trim().min(1).optional(),
+      responsable: z.string().trim().optional().nullable(),
+      fecha_inicio: z.string().regex(dateRegex).optional().nullable(),
+      fecha_limite: z.string().regex(dateRegex).optional().nullable(),
+      porcentaje_avance: z.coerce.number().min(0).max(100).optional(),
+      estado: z.enum(["pendiente", "en_progreso", "completado", "cancelado"]).optional(),
+      observaciones: z.string().trim().optional().nullable(),
+      resultado_final: z.string().trim().optional().nullable(),
+    })
+    .refine((data) => Object.keys(data).length > 0, {
+      message: "Debe enviar al menos un campo a actualizar",
+    }),
+  query: z.any(),
+  params: z.object({
+    id: uuidSchema,
+  }),
+});
