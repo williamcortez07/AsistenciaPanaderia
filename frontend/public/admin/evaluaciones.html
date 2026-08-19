@@ -310,13 +310,18 @@
             <textarea id="califObservaciones" rows="3" placeholder="Comentarios finales sobre el desempeño del colaborador..."></textarea>
           </div>
 
-          <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1.5rem;">
-            <button type="button" class="btn-secondary" onclick="cerrarModalCalificar()">
-              Cancelar
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-top:1.5rem;">
+            <button type="button" class="btn-secondary" onclick="abrirModalImprimirDesdeCalificar()">
+              <i data-lucide="printer"></i> Vista Imprimible / Generar Informe
             </button>
-            <button type="submit" class="btn-primary">
-              <i data-lucide="save"></i> Guardar Calificaciones y Recalcular Total
-            </button>
+            <div style="display:flex; gap:1rem;">
+              <button type="button" class="btn-secondary" onclick="cerrarModalCalificar()">
+                Cancelar
+              </button>
+              <button type="submit" class="btn-primary">
+                <i data-lucide="save"></i> Guardar Calificaciones y Recalcular Total
+              </button>
+            </div>
           </div>
         </form>
       </div>
@@ -566,6 +571,131 @@
             <button type="submit" class="btn-primary"><i data-lucide="save"></i> Guardar Objetivo</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- MODAL 7: IMPRIMIR EVALUACIÓN Y FIRMAS -->
+    <div class="modal-backdrop" id="modalImprimirEvaluacion">
+      <div class="modal-content-large printable-report-content" style="max-width: 900px; padding: 2.5rem;">
+        <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 2px solid var(--beige-suave); padding-bottom: 0.75rem;">
+          <h3 style="color:var(--marron-calido); font-family:'Montserrat'; font-size:1.25rem;">
+            <i data-lucide="printer"></i> Informe Oficial de Evaluación al Desempeño
+          </h3>
+          <div style="display: flex; gap: 0.75rem;">
+            <button class="btn-primary" onclick="window.print()">
+              <i data-lucide="printer"></i> Imprimir / Guardar PDF
+            </button>
+            <button class="btn-secondary" onclick="cerrarModalImprimir()">
+              Cerrar
+            </button>
+          </div>
+        </div>
+
+        <!-- REPORTE DE IMPRESIÓN OFICIAL -->
+        <div id="printableReportArea" class="printable-area">
+          <div class="report-header">
+            <div class="report-brand">
+              <h2 style="font-family:'Montserrat'; font-size:1.5rem; color:#4a2c11; margin:0;">PANADERÍA CENTRAL</h2>
+              <p style="font-size:0.85rem; color:#666; margin:0.2rem 0 0 0;">Departamento de Recursos Humanos & Talento Humano</p>
+            </div>
+            <div class="report-title-badge">
+              <h3 style="margin:0; font-family:'Montserrat'; font-size:1.05rem; color:#4a2c11;">INFORME DE EVALUACIÓN AL DESEMPEÑO</h3>
+              <span id="rptEstadoBadge" class="badge-status completada">COMPLETADA</span>
+            </div>
+          </div>
+
+          <hr style="border:none; border-top:2px solid #4a2c11; margin:1.25rem 0;" />
+
+          <!-- FICHA TÉCNICA DEL COLABORADOR -->
+          <div class="report-section-grid">
+            <div class="rpt-info-item">
+              <label>Empleado / Colaborador:</label>
+              <strong id="rptEmpleadoNombre">--</strong>
+            </div>
+            <div class="rpt-info-item">
+              <label>Código / Cédula:</label>
+              <span id="rptEmpleadoCodigo">--</span>
+            </div>
+            <div class="rpt-info-item">
+              <label>Cargo / Puesto:</label>
+              <span id="rptEmpleadoCargo">--</span>
+            </div>
+            <div class="rpt-info-item">
+              <label>Supervisor Directo:</label>
+              <span id="rptSupervisorNombre">--</span>
+            </div>
+            <div class="rpt-info-item">
+              <label>Periodo de Evaluación:</label>
+              <span id="rptPeriodoNombre">--</span>
+            </div>
+            <div class="rpt-info-item">
+              <label>Evaluador Responsable:</label>
+              <span id="rptEvaluadorNombre">--</span>
+            </div>
+            <div class="rpt-info-item">
+              <label>Fecha de Evaluación:</label>
+              <span id="rptFechaEval">--</span>
+            </div>
+            <div class="rpt-info-item">
+              <label>Puntuación Total Obtenida:</label>
+              <div id="rptPuntuacionTotal" class="score-pill excelente" style="font-size:1.15rem; display:inline-block; margin-top:0.2rem;">0.00 pts</div>
+            </div>
+          </div>
+
+          <h4 class="rpt-subtitle">1. RÚBRICA Y RESULTADOS POR CRITERIO DE CHECKLIST</h4>
+          <table class="report-table">
+            <thead>
+              <tr>
+                <th>Criterio / Rubro Evaluado</th>
+                <th style="text-align:center; width: 110px;">Ponderación</th>
+                <th style="text-align:center; width: 130px;">Puntuación (0-100)</th>
+                <th style="text-align:center; width: 110px;">Cumplido</th>
+                <th>Comentarios / Evidencias</th>
+              </tr>
+            </thead>
+            <tbody id="rptChecklistTbody">
+              <!-- Render dinámico -->
+            </tbody>
+          </table>
+
+          <h4 class="rpt-subtitle" style="margin-top:1.5rem;">2. EVALUACIÓN CUALITATIVA Y OBSERVACIONES</h4>
+          <div class="report-qualitative-box">
+            <div style="margin-bottom:0.75rem;">
+              <strong style="color:#724c30; font-size:0.85rem; text-transform:uppercase; display:block;">Fortalezas Destacadas:</strong>
+              <p id="rptFortalezas" style="margin:0.25rem 0 0 0; font-size:0.9rem; color:#333;">--</p>
+            </div>
+            <div style="margin-bottom:0.75rem;">
+              <strong style="color:#724c30; font-size:0.85rem; text-transform:uppercase; display:block;">Áreas de Oportunidad / Mejora:</strong>
+              <p id="rptAreasOportunidad" style="margin:0.25rem 0 0 0; font-size:0.9rem; color:#333;">--</p>
+            </div>
+            <div>
+              <strong style="color:#724c30; font-size:0.85rem; text-transform:uppercase; display:block;">Observaciones Generales de la Evaluación:</strong>
+              <p id="rptObservaciones" style="margin:0.25rem 0 0 0; font-size:0.9rem; color:#333;">--</p>
+            </div>
+          </div>
+
+          <!-- SECCIÓN FORMAL DE FIRMAS -->
+          <h4 class="rpt-subtitle" style="margin-top:2rem;">3. CONFORMIDAD Y FIRMAS</h4>
+          <p style="font-size:0.8rem; color:#666; margin-bottom:1.5rem;">
+            Al firmar este documento, las partes declaran haber revisado y notificado formalmente los resultados alcanzados durante el periodo de evaluación correspondiente.
+          </p>
+
+          <div class="signatures-container">
+            <div class="signature-box">
+              <div class="signature-line"></div>
+              <strong id="rptFirmaEmpleadoNombre">Nombre del Colaborador</strong>
+              <span id="rptFirmaEmpleadoMeta">Firma del Colaborador / Empleado</span>
+              <span style="font-size:0.75rem; color:#777; margin-top:0.3rem;">Fecha: ____ / ____ / ________</span>
+            </div>
+
+            <div class="signature-box">
+              <div class="signature-line"></div>
+              <strong id="rptFirmaEvaluadorNombre">Nombre del Evaluador</strong>
+              <span id="rptFirmaEvaluadorMeta">Firma del Evaluador / Jefe Inmediato</span>
+              <span style="font-size:0.75rem; color:#777; margin-top:0.3rem;">Fecha: ____ / ____ / ________</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 

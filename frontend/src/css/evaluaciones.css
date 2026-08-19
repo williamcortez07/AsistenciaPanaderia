@@ -500,3 +500,154 @@ main {
   background-color: var(--marron-calido);
   transition: width 0.3s ease;
 }
+
+/* ==========================================
+   ESTILOS DE VISTA GENERAL E IMPRESIÓN CON FIRMAS
+   ========================================== */
+.printable-area {
+  background: var(--blanco);
+  color: #222;
+  font-family: "Roboto", sans-serif;
+  line-height: 1.4;
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.report-title-badge {
+  text-align: right;
+}
+
+.report-section-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.9rem;
+  background: #f9f6f0;
+  padding: 1.2rem;
+  border-radius: 10px;
+  border: 1px solid #e0d0c0;
+  margin-bottom: 1.5rem;
+}
+
+.rpt-info-item label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #724c30;
+  text-transform: uppercase;
+}
+
+.rpt-info-item strong,
+.rpt-info-item span {
+  font-size: 0.9rem;
+}
+
+.rpt-subtitle {
+  font-family: "Montserrat", sans-serif;
+  color: #4a2c11;
+  font-size: 1.05rem;
+  border-bottom: 2px solid #e0d0c0;
+  padding-bottom: 0.4rem;
+  margin-bottom: 0.85rem;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+}
+
+.report-table th,
+.report-table td {
+  border: 1px solid #d0bca8;
+  padding: 0.6rem 0.75rem;
+}
+
+.report-table th {
+  background: #f2e6d9;
+  color: #4a2c11;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+}
+
+.report-qualitative-box {
+  background: #fdfbf7;
+  border: 1px solid #e2d2c2;
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.signatures-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  gap: 2rem;
+  margin-top: 3.5rem;
+  padding-top: 1rem;
+  page-break-inside: avoid;
+}
+
+.signature-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 270px;
+}
+
+.signature-line {
+  width: 100%;
+  border-bottom: 2px dashed #4a2c11;
+  margin-bottom: 0.75rem;
+  height: 45px;
+}
+
+.signature-box strong {
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.signature-box span {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* @media print para generar PDF / Imprimir limpio */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  #modalImprimirEvaluacion,
+  #modalImprimirEvaluacion * {
+    visibility: visible !important;
+  }
+  #modalImprimirEvaluacion {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    background: #fff !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+  .modal-content-large {
+    max-width: 100% !important;
+    width: 100% !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 1.5rem !important;
+    margin: 0 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}

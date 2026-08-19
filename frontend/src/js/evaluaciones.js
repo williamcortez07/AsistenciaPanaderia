@@ -116,7 +116,9 @@ function populateUsuarioSelects() {
   state.usuarios.forEach((u) => {
     const opt = document.createElement("option");
     opt.value = u.id;
-    opt.textContent = `${u.nombre} (${u.email})`;
+    const userLabel = u.nombre || u.correo || u.email || "Usuario";
+    const roleLabel = u.nombre_rol ? ` [${u.nombre_rol}]` : "";
+    opt.textContent = `${userLabel}${roleLabel}`;
     el.appendChild(opt);
   });
 }
@@ -226,6 +228,9 @@ async function cargarEvaluaciones() {
           <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
             <button class="btn-primary" style="padding:0.35rem 0.6rem; font-size:0.78rem;" onclick="abrirModalCalificar('${item.id}')">
               <i data-lucide="edit-3"></i> Calificar Checklist
+            </button>
+            <button class="btn-secondary" style="padding:0.35rem 0.6rem; font-size:0.78rem;" onclick="abrirModalImprimir('${item.id}')">
+              <i data-lucide="printer"></i> Imprimir / Firma
             </button>
             <button class="btn-secondary" style="padding:0.35rem 0.6rem; font-size:0.78rem;" onclick="cambiarEstadoEvaluacionPrompt('${item.id}', '${item.estado}')">
               Estado
@@ -1005,4 +1010,105 @@ async function eliminarObjetivo(id) {
   } catch (err) {
     window.showError?.("Error", err.message);
   }
+}
+
+// ==========================================
+// 8. IMPRESIÓN Y INFORME OFICIAL CON FIRMAS
+// ==========================================
+
+async function abrirModalImprimir(idEvaluacion) {
+  try {
+    window.showLoader?.();
+    const res = await window.API.Evaluaciones.obtenerEvaluacion(idEvaluacion);
+    const ev = res?.data || res;
+
+    // Poblar Ficha Técnica
+    const empNombre = `${ev.empleado_nombres || ""} ${ev.empleado_apellidos || ""}`.trim();
+    document.getElementById("rptEmpleadoNombre").textContent = empNombre || "N/A";
+    document.getElementById("rptEmpleadoCodigo").textContent = ev.codigo_empleado || ev.cedula || "N/A";
+    document.getElementById("rptEmpleadoCargo").textContent = ev.cargo_nombre || "Puesto no especificado";
+    document.getElementById("rptSupervisorNombre").textContent = ev.supervisor_nombre || "Sin supervisor asignado";
+    document.getElementById("rptPeriodoNombre").textContent = ev.periodo_nombre || "Periodo N/A";
+    document.getElementById("rptEvaluadorNombre").textContent = ev.evaluador_nombre || "Evaluador N/A";
+    
+    const fEval = ev.fecha_evaluacion ? new Date(ev.fecha_evaluacion).toLocaleDateString("es-NI") : "--";
+    document.getElementById("rptFechaEval").textContent = fEval;
+
+    // Estado Badge
+    const estBadge = document.getElementById("rptEstadoBadge");
+    if (estBadge) {
+      estBadge.textContent = (ev.estado || "borrador").toUpperCase();
+      estBadge.className = `badge-status ${ev.estado || "borrador"}`;
+    }
+
+    // Puntuación total
+    const scoreNum = parseFloat(ev.puntuacion_total || 0);
+    const scorePill = document.getElementById("rptPuntuacionTotal");
+    if (scorePill) {
+      scorePill.textContent = `${scoreNum.toFixed(2)} pts`;
+      scorePill.className = "score-pill";
+      if (scoreNum >= 90) scorePill.classList.add("excelente");
+      else if (scoreNum >= 80) scorePill.classList.add("bueno");
+      else if (scoreNum >= 70) scorePill.classList.add("regular");
+      else scorePill.classList.add("deficiente");
+    }
+
+    // Rúbrica & Checklist Tbody
+    const tbody = document.getElementById("rptChecklistTbody");
+    tbody.innerHTML = "";
+
+    const resultados = ev.resultados_checklist || [];
+    if (resultados.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:1rem; color:#888;">No hay calificaciones registradas en esta evaluación.</td></tr>';
+    } else {
+      resultados.forEach((r) => {
+        const tr = document.createElement("tr");
+        const scoreRubro = parseFloat(r.puntuacion || 0);
+        const cumplidoHtml = r.cumplido !== false
+          ? '<span style="color:#1b4332; font-weight:bold;">✔ Sí</span>'
+          : '<span style="color:#c92a2a; font-weight:bold;">✘ No</span>';
+
+        tr.innerHTML = `
+          <td><strong>${r.criterio_nombre || "Criterio"}</strong><br><small style="color:#666;">${r.criterio_descripcion || ""}</small></td>
+          <td style="text-align:center;"><strong>${r.ponderacion || 0}%</strong></td>
+          <td style="text-align:center; font-weight:bold;">${scoreRubro.toFixed(2)} pts</td>
+          <td style="text-align:center;">${cumplidoHtml}</td>
+          <td>${r.comentario || '<span style="color:#aaa; font-style:italic;">Sin observaciones</span>'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Evaluación Cualitativa
+    document.getElementById("rptFortalezas").textContent = ev.fortalezas || "No se detallaron fortalezas específicas.";
+    document.getElementById("rptAreasOportunidad").textContent = ev.areas_oportunidad || "No se detallaron áreas de oportunidad específicas.";
+    document.getElementById("rptObservaciones").textContent = ev.observaciones || "Sin observaciones adicionales.";
+
+    // Nombres en Firmas
+    document.getElementById("rptFirmaEmpleadoNombre").textContent = empNombre || "Nombre del Empleado";
+    document.getElementById("rptFirmaEmpleadoMeta").textContent = `Firma del Colaborador (${ev.codigo_empleado || "Código N/A"})`;
+    
+    document.getElementById("rptFirmaEvaluadorNombre").textContent = ev.evaluador_nombre || "Nombre del Evaluador";
+    document.getElementById("rptFirmaEvaluadorMeta").textContent = `Firma del Evaluador (${ev.evaluador_rol || "Jefe Inmediato"})`;
+
+    document.getElementById("modalImprimirEvaluacion").style.display = "flex";
+    refreshLucideIcons();
+  } catch (err) {
+    console.error("Error al cargar reporte imprimible:", err);
+    window.showError?.("Error", err.message || "No se pudo cargar el informe imprimible");
+  } finally {
+    window.hideLoader?.();
+  }
+}
+
+function abrirModalImprimirDesdeCalificar() {
+  if (state.evaluacionEnCalificacion?.id) {
+    abrirModalImprimir(state.evaluacionEnCalificacion.id);
+  } else {
+    window.showWarning?.("Atención", "Seleccione una evaluación válida primero");
+  }
+}
+
+function cerrarModalImprimir() {
+  document.getElementById("modalImprimirEvaluacion").style.display = "none";
 }
