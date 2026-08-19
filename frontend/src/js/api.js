@@ -436,10 +436,10 @@ const Evaluaciones = {
   guardarRespuestasBulk: (id_evaluacion, data) =>
     put(`/evaluaciones/${id_evaluacion}/respuestas/bulk`, data),
 
-  // Resultados Checklist Bulk (Alias)
+  // Resultados Checklist Bulk (Alias / Compatibilidad)
   obtenerResultados: (id_evaluacion) =>
     get(`/evaluaciones/${id_evaluacion}/resultados`),
-  guardarResultadosBulkLegacy: (id_evaluacion, data) =>
+  guardarResultadosBulk: (id_evaluacion, data) =>
     put(`/evaluaciones/${id_evaluacion}/resultados/bulk`, data),
 
   // Objetivos de Empleado
